@@ -65,14 +65,14 @@ jobs:
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 5e090a706effdde2e63f49921d45386bc12e3b59
+          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: b17e030f9ca0b0bce20fc60a46a6173cd02caad7
+          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 04b03e68ca944668332e8726050f2bc6549ad2e0
+          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -114,7 +114,9 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.6 => ./$d"
+                for version in v0.1.6 v0.1.7 v0.1.8; do
+                  echo "  github.com/cautem/${d} ${version} => ./$d"
+                done
               fi
             done
             if [[ -d slogx ]]; then
@@ -192,14 +194,14 @@ jobs:
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 5e090a706effdde2e63f49921d45386bc12e3b59
+          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: b17e030f9ca0b0bce20fc60a46a6173cd02caad7
+          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -213,7 +215,7 @@ jobs:
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 04b03e68ca944668332e8726050f2bc6549ad2e0
+          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -241,7 +243,9 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.6 => ./$d"
+                for version in v0.1.6 v0.1.7 v0.1.8; do
+                  echo "  github.com/cautem/${d} ${version} => ./$d"
+                done
               fi
             done
             if [[ -d slogx ]]; then
@@ -319,14 +323,14 @@ jobs:
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 5e090a706effdde2e63f49921d45386bc12e3b59
+          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: b17e030f9ca0b0bce20fc60a46a6173cd02caad7
+          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -340,7 +344,7 @@ jobs:
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 04b03e68ca944668332e8726050f2bc6549ad2e0
+          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -368,7 +372,9 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.6 => ./$d"
+                for version in v0.1.6 v0.1.7 v0.1.8; do
+                  echo "  github.com/cautem/${d} ${version} => ./$d"
+                done
               fi
             done
             if [[ -d slogx ]]; then
@@ -444,14 +450,14 @@ jobs:
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 5e090a706effdde2e63f49921d45386bc12e3b59
+          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: b17e030f9ca0b0bce20fc60a46a6173cd02caad7
+          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -465,7 +471,7 @@ jobs:
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 04b03e68ca944668332e8726050f2bc6549ad2e0
+          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -493,7 +499,9 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.6 => ./$d"
+                for version in v0.1.6 v0.1.7 v0.1.8; do
+                  echo "  github.com/cautem/${d} ${version} => ./$d"
+                done
               fi
             done
             if [[ -d slogx ]]; then
@@ -567,14 +575,14 @@ jobs:
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 04b03e68ca944668332e8726050f2bc6549ad2e0
+          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
 
       - name: Checkout cautem-runtime candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: b17e030f9ca0b0bce20fc60a46a6173cd02caad7
+          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
 
       - name: Checkout cautem-sdk candidate
         uses: actions/checkout@v4
@@ -590,7 +598,7 @@ jobs:
             [cautem-core]=v0.1.6
             [cautem-display]=v0.1.6
             [cautem-providers]=v0.1.6
-            [cautem-proxy]=v0.1.6
+            [cautem-proxy]=v0.1.8
           )
           for m in cautem-core cautem-display cautem-providers cautem-proxy; do
             git clone --depth 1 --branch "${MODULES[$m]}" \
@@ -615,7 +623,9 @@ jobs:
             for d in cautem-*; do echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"; done
             for d in cautem-*; do
               echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-              echo "  github.com/cautem/${d} v0.1.6 => ./$d"
+              for version in v0.1.6 v0.1.7 v0.1.8; do
+                echo "  github.com/cautem/${d} ${version} => ./$d"
+              done
             done
             echo '  github.com/cautem/slogx v0.1.0-alpha.1 => ./slogx'
             echo '  github.com/cautem/slogx v0.1.0-alpha.2 => ./slogx'

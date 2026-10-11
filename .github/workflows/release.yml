@@ -47,10 +47,10 @@ jobs:
             [cautem-display]=cautem/cautem-display@v0.1.6
             [cautem-driver]=cautem/cautem-driver@v0.1.7
             [cautem-providers]=cautem/cautem-providers@v0.1.6
-            [cautem-proxy]=cautem/cautem-proxy@v0.1.6
-            [cautem-runtime]=cautem/cautem-runtime@v0.1.6
+            [cautem-proxy]=cautem/cautem-proxy@v0.1.8
+            [cautem-runtime]=cautem/cautem-runtime@v0.1.8
             [cautem-sdk]=cautem/cautem-sdk@v0.1.6
-            [cautem-gateway]=cautem/cautem-gateway@v0.1.6
+            [cautem-gateway]=cautem/cautem-gateway@v0.1.7
             [slogx]=cautem/slogx@v0.1.3
           )
           for local in \
@@ -84,8 +84,10 @@ jobs:
               if [[ -d "$d" ]]; then
                 echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
-                if [[ "$d" == "cautem-driver" ]]; then
+                if [[ "$d" == "cautem-driver" || "$d" == "cautem-gateway" ]]; then
                   echo "  github.com/cautem/${d} v0.1.7 => ./$d"
+                elif [[ "$d" == "cautem-runtime" || "$d" == "cautem-proxy" ]]; then
+                  echo "  github.com/cautem/${d} v0.1.8 => ./$d"
                 else
                   echo "  github.com/cautem/${d} v0.1.6 => ./$d"
                 fi
