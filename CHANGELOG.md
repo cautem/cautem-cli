@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [v0.1.9] - 2026-10-11
+
+### Changed
+
+- Resolve gateway `v0.1.7`, runtime `v0.1.8`, proxy `v0.1.8`, and driver `v0.1.7` in release builds.
+- Refresh Go crypto, system, and terminal dependencies.
+- Keep the OpenShell SDK schema aligned with the gateway API used by this release.
+
+### Fixed
+
+- Repair the pkg.go.dev link in the README.
+
 ## [v0.1.8] - 2026-10-11
 
 ### Fixed

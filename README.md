@@ -135,7 +135,7 @@ Runnable recipes live in [`examples/`](./examples/).
 | Roadmap | [ROADMAP.md](./ROADMAP.md) |
 | Organization | [https://github.com/cautem](https://github.com/cautem) |
 | Organization overview | [github.com/cautem](https://github.com/cautem) |
-| pkg.go.dev | [`github.com/cautem/cautem-cli`](https://pkg.go.dev/github.com/cautem/cautem-cli) |
+| CLI source | [`cmd/cautem/`](./cmd/cautem/) |
 
 ## License
 
