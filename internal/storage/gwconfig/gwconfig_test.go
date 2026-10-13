@@ -37,3 +37,24 @@ func TestSaveOwnerOnly(t *testing.T) {
 		t.Fatalf("round-trip: %+v", out)
 	}
 }
+
+func TestResolveImageExperimentalGUIGPU(t *testing.T) {
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	t.Setenv("CAUTEM_USE_GHCR", "")
+	local, err := ResolveImage("gui-gpu", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if local != "cautem-sandbox:gui-gpu" {
+		t.Fatalf("local GUI+GPU image = %q", local)
+	}
+
+	t.Setenv("CAUTEM_USE_GHCR", "1")
+	remote, err := ResolveImage("cautem/gui-gpu", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if remote != "ghcr.io/cautem/cautem/sandboxes/gui-gpu:latest" {
+		t.Fatalf("published GUI+GPU image = %q", remote)
+	}
+}

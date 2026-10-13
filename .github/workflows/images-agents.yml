@@ -43,25 +43,25 @@ jobs:
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
+          ref: 6652bfadef356683b43d4013d675721b9787d84f
       - name: Checkout cautem-core
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-core
           path: cautem-core
-          ref: 91a83675f9cf80887fdc652b6031ee863bbd7f55
+          ref: 3e8578194f94048a5c2619d2e1411eac546de985
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: a19243085df51ab403f7de3df5d10892d91e22f3
+          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
+          ref: dda81bc1d7cf13e403ccbdbd67717d08eb69f98a
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -134,10 +134,17 @@ jobs:
         run: |
           set -euo pipefail
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -C cautem-runtime -o images/sandbox/cautem-init ./cmd/cautem-init
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -C cautem-runtime -o images/sandbox/cautem-supervisor ./cmd/cautem-supervisor
+          if [[ -f cautem-runtime/cmd/cautem-sshd/main.go ]]; then
+            CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -C cautem-runtime -o images/sandbox/cautem-sshd ./cmd/cautem-sshd
+          fi
           docker build -t "${LOCAL_BASE}" --target cli \
-            --build-arg DEBIAN_BASE=public.ecr.aws/docker/library/debian:bookworm@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858 \
+            --build-arg DEBIAN_BASE=mirror.gcr.io/library/debian:bookworm@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858 \
             -f cautem-runtime/images/sandbox/Dockerfile \
             cautem-runtime/images/sandbox
+          if [[ -x cautem-runtime/images/sandbox/cautem-sshd ]]; then
+            docker run --rm --entrypoint /usr/local/bin/cautem-sshd "${LOCAL_BASE}" --help >/dev/null
+          fi
       - name: Meta
         id: meta
         uses: docker/metadata-action@v5

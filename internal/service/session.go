@@ -3,14 +3,17 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/cautem/cautem-cli/internal/global"
 	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
 	"github.com/cautem/cautem-core/defaults"
+	"github.com/cautem/cautem-runtime/idp"
 	"github.com/cautem/cautem-sdk/go/cautem"
 )
 
@@ -83,10 +86,21 @@ func (a *App) gatewayTokenForURL(url string) string {
 	}
 	url = strings.TrimRight(url, "/")
 	dataDir := ""
+	if a != nil {
+		a.tokenMu.Lock()
+		defer a.tokenMu.Unlock()
+	}
 	if cfg, _, err := gwconfig.Load(); err == nil {
-		for _, g := range cfg.Gateways {
+		for name, g := range cfg.Gateways {
 			if strings.TrimRight(g.URL, "/") != url {
 				continue
+			}
+			if token, refreshed, refreshErr := a.refreshGatewayToken(cfg, name, g); refreshed {
+				if refreshErr != nil {
+					slog.Warn("gateway OIDC token refresh failed; run cautem gateway login", "gateway", name)
+					return g.Token
+				}
+				return token
 			}
 			if tok := strings.TrimSpace(g.Token); tok != "" {
 				return tok
@@ -107,6 +121,54 @@ func (a *App) gatewayTokenForURL(url string) string {
 		return ""
 	}
 	return strings.TrimSpace(string(b))
+}
+
+const gatewayTokenRefreshSkew = time.Minute
+
+// refreshGatewayToken refreshes only configured OIDC sessions and persists any
+// rotated refresh token before returning the new access token. The caller holds
+// tokenMu so concurrent requests in this CLI process share one refresh.
+func (a *App) refreshGatewayToken(cfg gwconfig.File, name string, gateway gwconfig.Gateway) (string, bool, error) {
+	if gateway.TokenExpiresAtMS == 0 || gateway.RefreshToken == "" || gateway.OIDCIssuer == "" || gateway.OIDCClientID == "" {
+		return "", false, nil
+	}
+	expiresAt := time.UnixMilli(gateway.TokenExpiresAtMS)
+	if time.Until(expiresAt) > gatewayTokenRefreshSkew {
+		return "", false, nil
+	}
+	if a == nil {
+		return "", true, errors.New("gateway app is unavailable")
+	}
+	ctx, cancel := a.withTimeout(TimeoutAPI)
+	defer cancel()
+	bundle, err := idp.RefreshTokens(ctx, idp.PKCEConfig{
+		Issuer:            gateway.OIDCIssuer,
+		ClientID:          gateway.OIDCClientID,
+		Audience:          gateway.OIDCAudience,
+		Scopes:            gateway.OIDCScopes,
+		AllowInsecureHTTP: gateway.OIDCAllowHTTP,
+	}, gateway.RefreshToken)
+	if err != nil {
+		return "", true, err
+	}
+	gateway.Token = bundle.AccessToken
+	if bundle.RefreshToken != "" {
+		gateway.RefreshToken = bundle.RefreshToken
+	}
+	if !bundle.Expiry.IsZero() {
+		gateway.TokenExpiresAtMS = bundle.Expiry.UnixMilli()
+	} else {
+		// Do not keep an already expired timestamp and trigger a refresh on
+		// every subsequent API call when the IdP omits expires_in.
+		gateway.TokenExpiresAtMS = 0
+	}
+	cfg.Gateways[name] = gateway
+	if err := gwconfig.Save(cfg); err != nil {
+		// The returned access token is valid for this invocation even if the
+		// refreshed bundle could not be written back for the next invocation.
+		slog.Warn("refreshed gateway OIDC token could not be saved", "gateway", name)
+	}
+	return gateway.Token, true, nil
 }
 
 // gatewayAuthTokenFile mirrors the gateway store.AuthTokenFile.

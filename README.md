@@ -29,7 +29,7 @@ The [quick start](https://cautem.github.io/sandbox.dev/get-started/) contains th
 |----------|--------------|
 | **Sandboxes** | create / exec / connect / rm — Docker-first via `cautem-driver` |
 | **Policy** | YAML check/compose with `cautem-core` + provider presets |
-| **Agents** | `--from cursor\|claude\|codex\|base\|gui\|gpu` (GHCR or local) |
+| **Agents** | `--from cursor\|claude\|codex\|base\|gui\|gpu\|gui-gpu` (GHCR or local) |
 | **Providers** | Cursor, GitHub, NVIDIA, local inference (`host.cautem.internal`) |
 | **Observability** | `cautem logs --tail`, TUI (`cautem term`), OCSF audit lines |
 | **Gateway** | register with `cautem-gateway`, relay exec, policy proposals |

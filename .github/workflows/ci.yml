@@ -37,56 +37,56 @@ jobs:
         with:
           repository: cautem/cautem-core
           path: cautem-core
-          ref: 91a83675f9cf80887fdc652b6031ee863bbd7f55
+          ref: 3e8578194f94048a5c2619d2e1411eac546de985
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-display
           path: cautem-display
-          ref: 160b0606885c3c13dcf30a8c6afb9c152b88ca12
+          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: a19243085df51ab403f7de3df5d10892d91e22f3
+          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 13b51fcd238cb1a0c4c199ece23cff065a4fcc81
+          ref: 82bc5955ced022937e1f84912197d7688d7f7551
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
+          ref: dda81bc1d7cf13e403ccbdbd67717d08eb69f98a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
+          ref: 6652bfadef356683b43d4013d675721b9787d84f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-sdk
           path: cautem-sdk
-          ref: b996938742ce46337c290f0baa6bce8bc42700f0
+          ref: 202de046bd183ccfe16afd2cd9702771e1fa335b
 
-      - name: Checkout cautem-gateway Control API
+      - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-gateway
-          path: cautem-gateway
-          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
+          repository: cautem/cautem-proto
+          path: cautem-proto
+          ref: 35501bd8a5e06cf5fe1a948cec2cabb86827b8d5
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -114,7 +114,8 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                for version in v0.1.6 v0.1.7 v0.1.8; do
+                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
+                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
                   echo "  github.com/cautem/${d} ${version} => ./$d"
                 done
               fi
@@ -166,56 +167,56 @@ jobs:
         with:
           repository: cautem/cautem-core
           path: cautem-core
-          ref: 91a83675f9cf80887fdc652b6031ee863bbd7f55
+          ref: 3e8578194f94048a5c2619d2e1411eac546de985
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-display
           path: cautem-display
-          ref: 160b0606885c3c13dcf30a8c6afb9c152b88ca12
+          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: a19243085df51ab403f7de3df5d10892d91e22f3
+          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 13b51fcd238cb1a0c4c199ece23cff065a4fcc81
+          ref: 82bc5955ced022937e1f84912197d7688d7f7551
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
+          ref: dda81bc1d7cf13e403ccbdbd67717d08eb69f98a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
+          ref: 6652bfadef356683b43d4013d675721b9787d84f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-sdk
           path: cautem-sdk
-          ref: b996938742ce46337c290f0baa6bce8bc42700f0
+          ref: 202de046bd183ccfe16afd2cd9702771e1fa335b
 
-      - name: Checkout cautem-gateway Control API
+      - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-gateway
-          path: cautem-gateway
-          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
+          repository: cautem/cautem-proto
+          path: cautem-proto
+          ref: 35501bd8a5e06cf5fe1a948cec2cabb86827b8d5
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -243,7 +244,8 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                for version in v0.1.6 v0.1.7 v0.1.8; do
+                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
+                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
                   echo "  github.com/cautem/${d} ${version} => ./$d"
                 done
               fi
@@ -295,56 +297,56 @@ jobs:
         with:
           repository: cautem/cautem-core
           path: cautem-core
-          ref: 91a83675f9cf80887fdc652b6031ee863bbd7f55
+          ref: 3e8578194f94048a5c2619d2e1411eac546de985
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-display
           path: cautem-display
-          ref: 160b0606885c3c13dcf30a8c6afb9c152b88ca12
+          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: a19243085df51ab403f7de3df5d10892d91e22f3
+          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 13b51fcd238cb1a0c4c199ece23cff065a4fcc81
+          ref: 82bc5955ced022937e1f84912197d7688d7f7551
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
+          ref: dda81bc1d7cf13e403ccbdbd67717d08eb69f98a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
+          ref: 6652bfadef356683b43d4013d675721b9787d84f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-sdk
           path: cautem-sdk
-          ref: b996938742ce46337c290f0baa6bce8bc42700f0
+          ref: 202de046bd183ccfe16afd2cd9702771e1fa335b
 
-      - name: Checkout cautem-gateway Control API
+      - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-gateway
-          path: cautem-gateway
-          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
+          repository: cautem/cautem-proto
+          path: cautem-proto
+          ref: 35501bd8a5e06cf5fe1a948cec2cabb86827b8d5
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -372,7 +374,8 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                for version in v0.1.6 v0.1.7 v0.1.8; do
+                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
+                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
                   echo "  github.com/cautem/${d} ${version} => ./$d"
                 done
               fi
@@ -400,6 +403,23 @@ jobs:
       - name: Build
         run: go build ./...
 
+      - name: Build and smoke proxy companion image
+        if: runner.os == 'Linux'
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$(mktemp -d)"
+          trap 'rm -rf "$stage"' EXIT
+          GOWORK="${{ github.workspace }}/go.work" CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+            go build -C cautem-cli -o "$stage/cautem" ./cmd/cautem
+          cp cautem-cli/policies/default.yaml "$stage/default.yaml"
+          docker build --platform linux/amd64 -t cautem-proxy:ci \
+            -f cautem-cli/docker/proxy/Dockerfile "$stage"
+          docker run --platform linux/amd64 --rm --read-only \
+            --tmpfs /tmp:rw,nosuid,nodev,size=16m \
+            --entrypoint /usr/local/bin/cautem cautem-proxy:ci proxy --help >/dev/null
+
   test:
     name: Test - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -422,56 +442,56 @@ jobs:
         with:
           repository: cautem/cautem-core
           path: cautem-core
-          ref: 91a83675f9cf80887fdc652b6031ee863bbd7f55
+          ref: 3e8578194f94048a5c2619d2e1411eac546de985
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-display
           path: cautem-display
-          ref: 160b0606885c3c13dcf30a8c6afb9c152b88ca12
+          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: a19243085df51ab403f7de3df5d10892d91e22f3
+          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 13b51fcd238cb1a0c4c199ece23cff065a4fcc81
+          ref: 82bc5955ced022937e1f84912197d7688d7f7551
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-proxy
           path: cautem-proxy
-          ref: 0d2705ef5361109fe3979059574111ca03c4d90a
+          ref: dda81bc1d7cf13e403ccbdbd67717d08eb69f98a
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
+          ref: 6652bfadef356683b43d4013d675721b9787d84f
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-sdk
           path: cautem-sdk
-          ref: b996938742ce46337c290f0baa6bce8bc42700f0
+          ref: 202de046bd183ccfe16afd2cd9702771e1fa335b
 
-      - name: Checkout cautem-gateway Control API
+      - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-gateway
-          path: cautem-gateway
-          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
+          repository: cautem/cautem-proto
+          path: cautem-proto
+          ref: 35501bd8a5e06cf5fe1a948cec2cabb86827b8d5
 
       - name: Checkout slogx
         uses: actions/checkout@v4
@@ -499,7 +519,8 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                for version in v0.1.6 v0.1.7 v0.1.8; do
+                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
+                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
                   echo "  github.com/cautem/${d} ${version} => ./$d"
                 done
               fi
@@ -568,39 +589,40 @@ jobs:
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: a19243085df51ab403f7de3df5d10892d91e22f3
+          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
 
       - name: Checkout cautem-gateway candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 6bf5ee0a4467212b325d725b73ff47972c801f7f
+          ref: 01e7c3fdc02322ee9d25b24b0258d5b7e02c2f30
 
       - name: Checkout cautem-runtime candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: eab70d72c3871fa6f7135408edec1e4cf6b3325f
+          ref: 6652bfadef356683b43d4013d675721b9787d84f
 
       - name: Checkout cautem-sdk candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-sdk
           path: cautem-sdk
-          ref: b996938742ce46337c290f0baa6bce8bc42700f0
+          ref: 202de046bd183ccfe16afd2cd9702771e1fa335b
 
       - name: Checkout sibling modules at published tags
         run: |
           set -euo pipefail
           declare -A MODULES=(
-            [cautem-core]=v0.1.6
+            [cautem-core]=v0.2.0
             [cautem-display]=v0.1.6
-            [cautem-providers]=v0.1.6
-            [cautem-proxy]=v0.1.8
+            [cautem-providers]=v0.1.7
+            [cautem-proxy]=v0.2.0
+            [cautem-proto]=v0.1.0
           )
-          for m in cautem-core cautem-display cautem-providers cautem-proxy; do
+          for m in cautem-core cautem-display cautem-providers cautem-proxy cautem-proto; do
             git clone --depth 1 --branch "${MODULES[$m]}" \
               "https://github.com/cautem/${m}.git" "${m}"
           done
@@ -623,7 +645,8 @@ jobs:
             for d in cautem-*; do echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"; done
             for d in cautem-*; do
               echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-              for version in v0.1.6 v0.1.7 v0.1.8; do
+              echo "  github.com/cautem/${d} v0.1.0 => ./$d"
+              for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8 v0.2.0; do
                 echo "  github.com/cautem/${d} ${version} => ./$d"
               done
             done

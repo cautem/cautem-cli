@@ -129,13 +129,15 @@ func ResolveImage(from, explicit string) (string, error) {
 	builtins := map[string]string{
 		"debian": defaults.ImageDebian,
 		// cautem catalog shorts (local). GHCR paths when CAUTEM_USE_GHCR=1.
-		"base":       defaults.ImageLocal,
-		"cautem/cli": defaults.ImageLocal,
-		"cautem/gui": defaults.ImageGUI,
-		"cautem/gpu": defaults.ImageGPU,
-		"cursor":     defaults.ImageCursor,
-		"claude":     defaults.ImageClaude,
-		"codex":      defaults.ImageCodex,
+		"base":           defaults.ImageLocal,
+		"cautem/cli":     defaults.ImageLocal,
+		"cautem/gui":     defaults.ImageGUI,
+		"cautem/gpu":     defaults.ImageGPU,
+		"gui-gpu":        defaults.ImageGUIGPU,
+		"cautem/gui-gpu": defaults.ImageGUIGPU,
+		"cursor":         defaults.ImageCursor,
+		"claude":         defaults.ImageClaude,
+		"codex":          defaults.ImageCodex,
 		// Opt-in NVIDIA OpenShell community interop.
 		"community/base":   "ghcr.io/nvidia/openshell-community/sandboxes/base:latest",
 		"community/ollama": "ghcr.io/nvidia/openshell-community/sandboxes/ollama:latest",
@@ -147,6 +149,8 @@ func ResolveImage(from, explicit string) (string, error) {
 		builtins["cautem/cli"] = defaults.ImageBaseRef
 		builtins["cautem/gui"] = defaults.ImageGUIRef
 		builtins["cautem/gpu"] = defaults.ImageGPURef
+		builtins["gui-gpu"] = defaults.ImageGUIGPURef
+		builtins["cautem/gui-gpu"] = defaults.ImageGUIGPURef
 		builtins["cursor"] = defaults.ImageCursorRef
 		builtins["claude"] = defaults.ImageClaudeRef
 		builtins["codex"] = defaults.ImageCodexRef

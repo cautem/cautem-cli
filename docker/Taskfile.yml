@@ -56,3 +56,28 @@ tasks:
       - task: agent:cursor
       - task: agent:claude
       - task: agent:codex
+
+  proxy:
+    desc: Build the minimal Cautem proxy companion image
+    vars:
+      ARCH: '{{.ARCH | default ""}}'
+      IMAGE: '{{.IMAGE | default "cautem-proxy:local"}}'
+    cmds:
+      - |
+        set -euo pipefail
+        ORG="{{.ORG}}"
+        ARCH="{{.ARCH}}"
+        if [[ -z "$ARCH" ]]; then
+          ARCH="$(go env GOARCH)"
+        fi
+        STAGE="$(mktemp -d)"
+        trap 'rm -rf "$STAGE"' EXIT
+        echo "build cautem for linux/$ARCH…"
+        GOWORK="$ORG/go.work" GOOS=linux GOARCH="$ARCH" CGO_ENABLED=0 \
+          go build -C "$ORG/cautem-cli" -o "$STAGE/cautem" ./cmd/cautem
+        cp "$ORG/cautem-cli/policies/default.yaml" "$STAGE/default.yaml"
+        docker build --platform "linux/$ARCH" -t "{{.IMAGE}}" \
+          -f "$ORG/cautem-cli/docker/proxy/Dockerfile" "$STAGE"
+        docker run --platform "linux/$ARCH" --rm --read-only --tmpfs /tmp:rw,nosuid,nodev,size=16m \
+          --entrypoint /usr/local/bin/cautem "{{.IMAGE}}" proxy --help >/dev/null
+        echo "ok: {{.IMAGE}}"
