@@ -45,10 +45,10 @@ jobs:
           declare -A MODULES=(
             [cautem-core]=cautem/cautem-core@v0.2.0
             [cautem-display]=cautem/cautem-display@v0.1.6
-            [cautem-driver]=cautem/cautem-driver@v0.2.0
+            [cautem-driver]=cautem/cautem-driver@v0.2.1
             [cautem-providers]=cautem/cautem-providers@v0.1.7
             [cautem-proxy]=cautem/cautem-proxy@v0.2.0
-            [cautem-runtime]=cautem/cautem-runtime@v0.2.0
+            [cautem-runtime]=cautem/cautem-runtime@v0.2.1
             [cautem-sdk]=cautem/cautem-sdk@v0.2.0
             [cautem-gateway]=cautem/cautem-gateway@v0.2.0
             [cautem-proto]=cautem/cautem-proto@v0.1.0
@@ -86,7 +86,7 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8 v0.2.0; do
+                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8 v0.2.0 v0.2.1; do
                   echo "  github.com/cautem/${d} ${version} => ./$d"
                 done
               fi

@@ -65,11 +65,28 @@ def main() -> None:
             wait_http(f"http://127.0.0.1:{console_port}/healthz", console)
             environment["CAUTEM_CONSOLE_E2E_URL"] = f"http://127.0.0.1:{console_port}"
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(headless=True)
+                channel = environment.get("CAUTEM_PLAYWRIGHT_CHANNEL", "").strip() or None
+                browser = playwright.chromium.launch(channel=channel, headless=True)
                 context = browser.new_context()
                 page = context.new_page()
                 errors: list[str] = []
+                logout_set_cookie: list[str] = []
+                signed_out_request_had_session_cookie: list[bool] = []
                 page.on("pageerror", lambda error: errors.append(str(error)))
+                page.on(
+                    "response",
+                    lambda response: logout_set_cookie.append(response.all_headers().get("set-cookie", ""))
+                    if response.url.endswith("/logout")
+                    else None,
+                )
+                page.on(
+                    "request",
+                    lambda request: signed_out_request_had_session_cookie.append(
+                        "cautem_console_session=" in request.all_headers().get("cookie", "")
+                    )
+                    if request.url.endswith("/signed-out")
+                    else None,
+                )
                 response = page.goto(environment["CAUTEM_CONSOLE_E2E_URL"], wait_until="networkidle")
                 assert response is not None and response.status == 200
                 assert page.title() == "cautem Console"
@@ -83,13 +100,30 @@ def main() -> None:
                 cookies = {item["name"]: item for item in context.cookies()}
                 session = cookies.get("cautem_console_session")
                 assert session is not None and session["httpOnly"] and session["sameSite"] == "Lax"
+                original_session_id = session["value"]
                 page.get_by_role("button", name="Sign out").click()
                 signed_out_heading = page.get_by_role("heading", name="Signed out")
                 try:
                     signed_out_heading.wait_for(state="visible", timeout=3000)
                 except Exception as error:
                     raise AssertionError(f"logout did not render signed-out page: url={page.url} title={page.title()} html={page.content()[:1200]}") from error
-                assert "cautem_console_session" not in {item["name"] for item in context.cookies()}
+                assert any(
+                    "cautem_console_session=;" in header and "Max-Age=0" in header
+                    for header in logout_set_cookie
+                ), f"logout did not expire the session cookie: {logout_set_cookie}"
+                assert signed_out_request_had_session_cookie == [False], (
+                    "Chrome sent the expired session cookie after logout: "
+                    f"{signed_out_request_had_session_cookie}"
+                )
+                request = playwright.request.new_context()
+                try:
+                    revoked = request.post(
+                        environment["CAUTEM_CONSOLE_E2E_URL"] + "/logout",
+                        headers={"Cookie": f"cautem_console_session={original_session_id}"},
+                    )
+                finally:
+                    request.dispose()
+                assert revoked.status == 401, f"logout did not revoke its session: status={revoked.status}"
 
                 csrf_context = browser.new_context()
                 csrf_page = csrf_context.new_page()

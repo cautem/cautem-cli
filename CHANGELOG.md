@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [v0.2.1] - 2026-10-13
+
+### Changed
+
+- Update cautem-driver and cautem-runtime to v0.2.1 for release builds.
+
+### Fixed
+
+- Expire the Console session cookie on logout in Chrome and other browser clients.
+
 ## [v0.2.0] - 2026-10-13
 
 ### Added
