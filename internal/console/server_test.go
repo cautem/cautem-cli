@@ -75,6 +75,10 @@ func TestSecurityHeadersAndLogoutCSRF(t *testing.T) {
 	if got := goodRecorder.Header().Get("Location"); got != "/signed-out" {
 		t.Fatalf("logout location=%q, want /signed-out", got)
 	}
+	clearedCookie := goodRecorder.Header().Get("Set-Cookie")
+	if !strings.Contains(clearedCookie, "Max-Age=0") || !strings.Contains(clearedCookie, "Expires=Thu, 01 Jan 1970") {
+		t.Fatalf("logout cookie expiry=%q; want Max-Age=0 and an expired Expires value", clearedCookie)
+	}
 	server.mu.Lock()
 	_, exists := server.sessions[cookie.Value]
 	server.mu.Unlock()

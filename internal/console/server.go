@@ -499,7 +499,7 @@ func (s *Server) setCookie(w http.ResponseWriter, name, value string, ttl time.D
 }
 
 func (s *Server) clearCookie(w http.ResponseWriter, name string) {
-	http.SetCookie(w, &http.Cookie{Name: name, Path: "/", MaxAge: -1, HttpOnly: true, Secure: s.origin.Scheme == "https", SameSite: http.SameSiteLaxMode})
+	http.SetCookie(w, &http.Cookie{Name: name, Path: "/", Expires: time.Unix(1, 0).UTC(), MaxAge: -1, HttpOnly: true, Secure: s.origin.Scheme == "https", SameSite: http.SameSiteLaxMode})
 }
 
 func (s *Server) pruneLocked(now time.Time) {

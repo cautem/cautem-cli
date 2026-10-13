@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/cautem/cautem-cli/actions/workflows/ci.yml"><img src="https://github.com/cautem/cautem-cli/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/cautem/cautem-cli/releases"><img src="https://img.shields.io/github/v/release/cautem/cautem-cli?include_prereleases&sort=semver&label=release" alt="release"></a>
-  <a href="https://img.shields.io/badge/status-v0.1.6-blue"><img src="https://img.shields.io/badge/status-v0.1.6-blue" alt="v0.1.6"></a>
+  <a href="https://img.shields.io/badge/status-v0.2.1-blue"><img src="https://img.shields.io/badge/status-v0.2.1-blue" alt="v0.2.1"></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/License-Apache--2.0-blue.svg" alt="License"></a>
   <a href="https://github.com/cautem/cautem-cli"><img src="https://img.shields.io/badge/Go-1.27+-00ADD8?logo=go" alt="Go Version"></a>
 </p>
@@ -38,11 +38,11 @@ The [quick start](https://cautem.github.io/sandbox.dev/get-started/) contains th
 
 ## Installation
 
-Install the current release (`v0.1.6`) into `~/.local/bin`:
+Install the current release (`v0.2.1`) into `~/.local/bin`:
 
 ```bash
 curl -LsSf https://raw.githubusercontent.com/cautem/cautem-cli/main/install.sh \
-  | CAUTEM_VERSION=v0.1.6 sh
+  | CAUTEM_VERSION=v0.2.1 sh
 ```
 
 From source in the [multi-repo workspace](https://github.com/cautem):
@@ -55,7 +55,7 @@ go build -C cautem-cli -o ../cautem-console ./cmd/cautem-console
 
 **Requirements:** Docker or Podman. Go 1.27+ only if building from source.
 
-`v0.1.6` is the current stable numbered release. It builds from published module dependencies; OpenShell behavioral compatibility remains partial. See [development and releases](https://cautem.github.io/sandbox.dev/reference/development/) and the [compatibility status](https://cautem.github.io/sandbox.dev/reference/openshell-compatibility/).
+`v0.2.1` is the current stable numbered release. It builds from published module dependencies; OpenShell behavioral compatibility remains partial. See [development and releases](https://cautem.github.io/sandbox.dev/reference/development/) and the [compatibility status](https://cautem.github.io/sandbox.dev/reference/openshell-compatibility/).
 
 ---
 

@@ -1,6 +1,6 @@
 # Roadmap — cautem-cli
 
-Status: **v0.2.0** (release prepared) · Depends on core / driver / proxy / runtime / SDK `v0.2.0`, providers `v0.1.7`, display `v0.1.6`, proto `v0.1.0`; slogx `v0.1.3`
+Status: **v0.2.1** (release prepared) · Depends on core / proxy / SDK `v0.2.0`, driver / runtime `v0.2.1`, providers `v0.1.7`, display `v0.1.6`, proto `v0.1.0`; slogx `v0.1.3`
 
 ## This module
 
