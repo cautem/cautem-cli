@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 the cautem authors
 # SPDX-License-Identifier: Apache-2.0
 
-ARG DEBIAN_BASE=debian:bookworm@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858
+ARG DEBIAN_BASE=mirror.gcr.io/library/debian:bookworm@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858
 FROM ${DEBIAN_BASE}
 
 ENV DEBIAN_FRONTEND=noninteractive \
