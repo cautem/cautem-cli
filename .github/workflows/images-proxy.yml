@@ -80,6 +80,19 @@ jobs:
             arm64) asset="cautem_Linux_arm64.tar.gz" ;;
             *) echo "unsupported architecture: $ARCH" >&2; exit 1 ;;
           esac
+          asset_ready=0
+          for attempt in $(seq 1 60); do
+            if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+              --json assets --jq '.assets[].name' 2>/dev/null | grep -Fxq "$asset"; then
+              asset_ready=1
+              break
+            fi
+            sleep 10
+          done
+          if [[ "$asset_ready" != 1 ]]; then
+            echo "release asset $asset was not published for $RELEASE_TAG" >&2
+            exit 1
+          fi
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir dist
           mkdir -p image-context
           tar -xzf "dist/$asset" -C image-context cautem
