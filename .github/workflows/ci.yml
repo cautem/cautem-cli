@@ -596,7 +596,7 @@ jobs:
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 04b03e68ca944668332e8726050f2bc6549ad2e0
+          ref: 01e7c3fdc02322ee9d25b24b0258d5b7e02c2f30
 
       - name: Checkout cautem-runtime candidate
         uses: actions/checkout@v4
