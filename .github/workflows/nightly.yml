@@ -42,12 +42,13 @@ jobs:
             [cautem-runtime]=cautem/cautem-runtime
             [cautem-sdk]=cautem/cautem-sdk
             [cautem-gateway]=cautem/cautem-gateway
+            [cautem-proto]=cautem/cautem-proto
             [slogx]=cautem/slogx
           )
           for local in \
             cautem-core cautem-display cautem-driver \
             cautem-providers cautem-proxy cautem-runtime \
-            cautem-sdk cautem-gateway slogx
+            cautem-sdk cautem-gateway cautem-proto slogx
           do
             remote="${REMOTES[$local]}"
             if ! git clone --depth 1 --branch main \
@@ -77,6 +78,7 @@ jobs:
                 echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
                 echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
+                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
                 for version in v0.1.6 v0.1.7 v0.1.8; do
                   echo "  github.com/cautem/${d} ${version} => ./$d"
                 done
@@ -103,6 +105,7 @@ jobs:
             cautem-core/go.sum
             cautem-runtime/go.sum
             cautem-gateway/go.sum
+            cautem-proto/go.sum
 
       - name: Cross-compile release matrix
         working-directory: cautem-cli

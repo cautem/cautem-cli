@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [v0.2.0] - 2026-10-13
+
+### Added
+
+- Add Gateway login and remote management commands for sandbox, policy, provider, and proxy workflows.
+- Add a separately buildable proxy image and publish workflow.
+
+### Changed
+
+- Move generated first-party API clients to the published `cautem-proto` module.
+- Split CLI and service operations into focused files while retaining existing command entry points.
+
 ## [v0.1.9] - 2026-10-11
 
 ### Changed

@@ -1,0 +1,133 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 the cautem authors
+# SPDX-License-Identifier: Apache-2.0
+name: images-proxy
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing CLI release tag to publish (for example v0.1.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/cautem/cautem/sandboxes/proxy
+
+jobs:
+  build:
+    name: Build linux/${{ matrix.arch }} image
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    outputs:
+      release_tag: ${{ steps.release-tag.outputs.value }}
+    steps:
+      - name: Resolve CLI release tag
+        id: release-tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            tag="$INPUT_TAG"
+          else
+            tag="$REF_NAME"
+          fi
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "invalid CLI release tag: $tag" >&2
+            exit 1
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout cautem-cli
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.release-tag.outputs.value }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download matching CLI release binary
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.release-tag.outputs.value }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          case "$ARCH" in
+            amd64) asset="cautem_Linux_x86_64.tar.gz" ;;
+            arm64) asset="cautem_Linux_arm64.tar.gz" ;;
+            *) echo "unsupported architecture: $ARCH" >&2; exit 1 ;;
+          esac
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir dist
+          mkdir -p image-context
+          tar -xzf "dist/$asset" -C image-context cautem
+          cp policies/default.yaml image-context/default.yaml
+          chmod 0555 image-context/cautem
+
+      - name: Build and push architecture image
+        uses: docker/build-push-action@v6
+        with:
+          context: image-context
+          file: docker/proxy/Dockerfile
+          platforms: linux/${{ matrix.arch }}
+          push: true
+          tags: ${{ env.IMAGE }}:${{ steps.release-tag.outputs.value }}-${{ matrix.arch }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.release-tag.outputs.value }}
+            org.opencontainers.image.description=Cautem sandbox proxy companion
+
+  manifest:
+    name: Publish multi-architecture manifest
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish version tags
+        env:
+          RELEASE_TAG: ${{ needs.build.outputs.release_tag }}
+          IMAGE: ${{ env.IMAGE }}
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          docker buildx imagetools create \
+            --tag "$IMAGE:$version" \
+            "$IMAGE:$RELEASE_TAG-amd64" \
+            "$IMAGE:$RELEASE_TAG-arm64"
+          if [[ "$version" != *-* ]]; then
+            docker buildx imagetools create \
+              --tag "$IMAGE:latest" \
+              "$IMAGE:$RELEASE_TAG-amd64" \
+              "$IMAGE:$RELEASE_TAG-arm64"
+          fi

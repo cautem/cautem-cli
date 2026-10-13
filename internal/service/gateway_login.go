@@ -101,6 +101,8 @@ func (a *App) storeOIDCBundle(name string, bundle idp.TokenBundle) error {
 	g.RefreshToken = bundle.RefreshToken
 	if !bundle.Expiry.IsZero() {
 		g.TokenExpiresAtMS = bundle.Expiry.UnixMilli()
+	} else {
+		g.TokenExpiresAtMS = 0
 	}
 	cfg.Gateways[name] = g
 	if err := gwconfig.Save(cfg); err != nil {
