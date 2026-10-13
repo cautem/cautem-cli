@@ -51,7 +51,7 @@ jobs:
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
+          ref: b262a04d463be6d81ec01ea99a2016ec0047cd8f
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
@@ -72,7 +72,7 @@ jobs:
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: 5c81d1f8fc3a54b74a2035f097c35672e94bfb74
+          ref: c84f3581532e32283bc18233325d52159533e9c2
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -181,7 +181,7 @@ jobs:
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
+          ref: b262a04d463be6d81ec01ea99a2016ec0047cd8f
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
@@ -202,7 +202,7 @@ jobs:
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: 5c81d1f8fc3a54b74a2035f097c35672e94bfb74
+          ref: c84f3581532e32283bc18233325d52159533e9c2
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -311,7 +311,7 @@ jobs:
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
+          ref: b262a04d463be6d81ec01ea99a2016ec0047cd8f
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
@@ -332,7 +332,7 @@ jobs:
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: 5c81d1f8fc3a54b74a2035f097c35672e94bfb74
+          ref: c84f3581532e32283bc18233325d52159533e9c2
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -456,7 +456,7 @@ jobs:
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
+          ref: b262a04d463be6d81ec01ea99a2016ec0047cd8f
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
@@ -477,7 +477,7 @@ jobs:
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: 5c81d1f8fc3a54b74a2035f097c35672e94bfb74
+          ref: c84f3581532e32283bc18233325d52159533e9c2
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
@@ -589,21 +589,21 @@ jobs:
         with:
           repository: cautem/cautem-driver
           path: cautem-driver
-          ref: 89a88e2fe3782144e6f41991e1b7aea56c1d516c
+          ref: b262a04d463be6d81ec01ea99a2016ec0047cd8f
 
       - name: Checkout cautem-gateway candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-gateway
           path: cautem-gateway
-          ref: 39ac3b22856b27b5f3b465054b4bc3ddb56b63b5
+          ref: 90392cb197d7b26238ec0cfa24df1c6e7a264f6b
 
       - name: Checkout cautem-runtime candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/cautem-runtime
           path: cautem-runtime
-          ref: 5c81d1f8fc3a54b74a2035f097c35672e94bfb74
+          ref: c84f3581532e32283bc18233325d52159533e9c2
 
       - name: Checkout cautem-sdk candidate
         uses: actions/checkout@v4
