@@ -701,6 +701,18 @@ jobs:
         env:
           GOTOOLCHAIN: local
 
+      - name: Install Syft
+        id: syft
+        uses: anchore/sbom-action/download-syft@v0.24.0
+        with:
+          syft-version: v1.42.3
+
+      - name: Generate and validate SPDX SBOMs for release archives
+        working-directory: cautem-cli
+        env:
+          SYFT_BIN: ${{ steps.syft.outputs.cmd }}
+        run: bash scripts/generate-release-sboms.sh "$SYFT_BIN" dist
+
       - name: Verify archive layout and install.sh
         working-directory: cautem-cli
         shell: bash

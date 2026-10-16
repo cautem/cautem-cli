@@ -17,10 +17,12 @@ on:
     inputs:
       tag:
         description: "Existing tag to rebuild (e.g. v0.1.8)"
-        required: false
+        required: true
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -77,3 +79,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOTOOLCHAIN: local
+
+      - name: Install Syft
+        id: syft
+        uses: anchore/sbom-action/download-syft@v0.24.0
+        with:
+          syft-version: v1.42.3
+
+      - name: Generate SPDX SBOMs for release archives
+        working-directory: cautem-cli
+        env:
+          SYFT_BIN: ${{ steps.syft.outputs.cmd }}
+        run: bash scripts/generate-release-sboms.sh "$SYFT_BIN" dist
+
+      - name: Upload SPDX SBOMs to the release
+        working-directory: cautem-cli
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag != '' && inputs.tag || github.ref_name }}
+        run: gh release upload "$RELEASE_TAG" dist/*.spdx.json --clobber
+
+      - name: Attest release archives
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            cautem-cli/dist/*.tar.gz
+            cautem-cli/dist/*.zip
+
+      - name: Attest published SBOM documents
+        uses: actions/attest@v4
+        with:
+          subject-path: cautem-cli/dist/*.spdx.json
