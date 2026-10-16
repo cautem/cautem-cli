@@ -49,21 +49,21 @@ jobs:
         with:
           repository: cautem/quarshell-gateway
           path: cautem-gateway
-          ref: fe37011c5372ff8f5a2440668666884266c9581f
+          ref: d0ff9c827d9e91ee76a679db3728809d9b78787b
 
       - name: Checkout cautem-runtime helper source
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
 
       - name: Checkout cautem-providers profile catalog
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-providers
           path: cautem-providers
-          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+          ref: 58c132d1d47c8551b03ed37a8d7583db395d5276
 
       - uses: actions/setup-go@v5
         with:

@@ -7,15 +7,15 @@ toolchain go1.27.2
 require (
 	connectrpc.com/connect v1.21.0
 	github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20261013191600-5a7728c304b5
-	github.com/cautem/quarshell-core v0.3.1-0.20261016151917-f75458088399
-	github.com/cautem/quarshell-display v0.1.7-0.20261016154255-69036332d77f
-	github.com/cautem/quarshell-driver v0.3.1-0.20261016183736-516fc183a5fd
-	github.com/cautem/quarshell-proto v0.2.1-0.20261016152658-94146822ca96
-	github.com/cautem/quarshell-providers v0.1.9-0.20261016154254-54b4eb5cb183
-	github.com/cautem/quarshell-proxy v0.3.1-0.20261016181953-cca79d795127
-	github.com/cautem/quarshell-runtime v0.3.1-0.20261016182820-7a6e8ac72370
-	github.com/cautem/quarshell-sdk v0.3.1-0.20261016154519-f4440643af55
-	github.com/cautem/quarshell-slogx v0.1.4-0.20261016153436-5ec8e199a72f
+	github.com/cautem/quarshell-core v0.3.1
+	github.com/cautem/quarshell-display v0.1.7
+	github.com/cautem/quarshell-driver v0.3.1
+	github.com/cautem/quarshell-proto v0.2.1
+	github.com/cautem/quarshell-providers v0.1.9
+	github.com/cautem/quarshell-proxy v0.3.1
+	github.com/cautem/quarshell-runtime v0.3.1
+	github.com/cautem/quarshell-sdk v0.3.1
+	github.com/cautem/quarshell-slogx v0.1.4
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/moby/moby/api v1.56.1

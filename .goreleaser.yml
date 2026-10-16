@@ -125,13 +125,13 @@ release:
     ## Install
 
     ```bash
-    curl -LsSf https://raw.githubusercontent.com/cautem/cautem-cli/main/install.sh | sh
+    curl -LsSf https://raw.githubusercontent.com/cautem/quarshell-cli/main/install.sh | sh
     ```
 
     Pin a tag:
 
     ```bash
-    curl -LsSf https://raw.githubusercontent.com/cautem/cautem-cli/main/install.sh | CAUTEM_VERSION={{ .Tag }} sh
+    curl -LsSf https://raw.githubusercontent.com/cautem/quarshell-cli/main/install.sh | CAUTEM_VERSION={{ .Tag }} sh
     ```
 
     **Alpha / pre-release:** APIs may change. See the development and release guide at cautem.github.io/sandbox.dev/reference/development/.
