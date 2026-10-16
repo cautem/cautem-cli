@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	core "github.com/cautem/cautem-core"
-	"github.com/cautem/cautem-runtime/sandbox"
+	core "github.com/cautem/quarshell-core"
+	"github.com/cautem/quarshell-runtime/sandbox"
 )
 
 func TestCanonicalMainCommandRequiresNonTTYCreateArgv(t *testing.T) {

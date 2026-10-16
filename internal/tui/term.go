@@ -12,8 +12,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/cautem/cautem-driver/driver"
 	"github.com/cautem/quarshell-cli/internal/service"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 var (

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-runtime/sandbox"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-runtime/sandbox"
 )
 
 // Run with CAUTEM_TEST_UPLOAD_IMAGE set and CAUTEM_DRIVER=docker|podman to

@@ -6,9 +6,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 	"github.com/cautem/quarshell-cli/internal/storage/templates"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 // TemplateCreate saves a local sandbox template.

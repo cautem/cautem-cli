@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/storage/sandboxstate"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-sdk/go/cautem"
+	"github.com/cautem/quarshell-slogx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cautem/cautem-proxy/proxy"
+	"github.com/cautem/quarshell-proxy/proxy"
 )
 
 func serveUnixProxy(ctx context.Context, server *proxy.Server, path string) error {

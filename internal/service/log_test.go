@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/cautem/quarshell-cli/internal/logger"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-slogx"
 )
 
 func TestOpLogger_includesOpAttr(t *testing.T) {

@@ -1,7 +1,7 @@
 # cautem-cli/docker/
 
 Agent sandbox images for the `cautem` CLI (`--from cursor|claude|codex`).
-Runtime base (`cautem-sandbox:local` / GHCR `:cli`) is built from the [runtime image sources](https://github.com/cautem/cautem-runtime/tree/main/images/sandbox) via `task runtime:image:cli` in the multi-repo workspace.
+Runtime base (`cautem-sandbox:local` / GHCR `:cli`) is built from the [runtime image sources](https://github.com/cautem/quarshell-runtime/tree/main/images/sandbox) via `task runtime:image:cli` in the multi-repo workspace.
 
 The Kubernetes companion uses a separate minimal image with the `cautem proxy`
 entrypoint. Build it locally from the workspace with `task docker:proxy`; the

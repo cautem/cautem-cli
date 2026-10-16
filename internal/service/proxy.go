@@ -11,18 +11,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/cautem-core/engine"
-	"github.com/cautem/cautem-core/env"
-	"github.com/cautem/cautem-core/policy"
-	"github.com/cautem/cautem-proxy/proxy"
-	"github.com/cautem/cautem-runtime/relayclient"
-	"github.com/cautem/cautem-runtime/relaytarget"
-	"github.com/cautem/cautem-runtime/supervisorcontrol"
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/logger"
 	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-core/engine"
+	"github.com/cautem/quarshell-core/env"
+	"github.com/cautem/quarshell-core/policy"
+	"github.com/cautem/quarshell-proxy/proxy"
+	"github.com/cautem/quarshell-runtime/relayclient"
+	"github.com/cautem/quarshell-runtime/relaytarget"
+	"github.com/cautem/quarshell-runtime/supervisorcontrol"
+	"github.com/cautem/quarshell-sdk/go/cautem"
+	"github.com/cautem/quarshell-slogx"
 )
 
 // ProxyOpts for foreground host-side CONNECT proxy (debug / host-proxy mode).

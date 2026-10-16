@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/cautem-runtime/idp"
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/global"
 	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-runtime/idp"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 var errNoCurrentGateway = errors.New("no current gateway; run: cautem gateway add|select")

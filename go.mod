@@ -7,15 +7,15 @@ toolchain go1.27.2
 require (
 	connectrpc.com/connect v1.21.0
 	github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20261013191600-5a7728c304b5
-	github.com/cautem/cautem-core v0.3.0
-	github.com/cautem/cautem-display v0.1.6
-	github.com/cautem/cautem-driver v0.3.0
-	github.com/cautem/cautem-proto v0.2.0
-	github.com/cautem/cautem-providers v0.1.8
-	github.com/cautem/cautem-proxy v0.3.0
-	github.com/cautem/cautem-runtime v0.3.0
-	github.com/cautem/cautem-sdk v0.3.0
-	github.com/cautem/slogx v0.1.3
+	github.com/cautem/quarshell-core v0.3.1-0.20261016151917-f75458088399
+	github.com/cautem/quarshell-display v0.1.7-0.20261016154255-69036332d77f
+	github.com/cautem/quarshell-driver v0.3.1-0.20261016180809-ff63d197d183
+	github.com/cautem/quarshell-proto v0.2.1-0.20261016152658-94146822ca96
+	github.com/cautem/quarshell-providers v0.1.9-0.20261016154254-54b4eb5cb183
+	github.com/cautem/quarshell-proxy v0.3.1-0.20261016154341-8e22505d3706
+	github.com/cautem/quarshell-runtime v0.3.1-0.20261016181152-338d855de8d8
+	github.com/cautem/quarshell-sdk v0.3.1-0.20261016154519-f4440643af55
+	github.com/cautem/quarshell-slogx v0.1.4-0.20261016153436-5ec8e199a72f
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/moby/moby/api v1.56.1
@@ -34,6 +34,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20261006220739-8c912ac31dd4 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
+	github.com/cautem/slogx v0.1.3 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/charmbracelet/colorprofile v0.2.3-0.20250311203215-f60798e515dc // indirect

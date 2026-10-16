@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cautem/cautem-core/policy"
-	"github.com/cautem/cautem-runtime/inference"
+	"github.com/cautem/quarshell-core/policy"
+	"github.com/cautem/quarshell-runtime/inference"
 )
 
 // InferenceList prints builtin provider presets.

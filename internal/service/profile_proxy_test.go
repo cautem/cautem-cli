@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cautem/cautem-core/policy"
-	"github.com/cautem/cautem-providers/provider"
-	"github.com/cautem/cautem-proxy/proxy"
+	"github.com/cautem/quarshell-core/policy"
+	"github.com/cautem/quarshell-providers/provider"
+	"github.com/cautem/quarshell-proxy/proxy"
 )
 
 func TestCompatOpenAIProfileComposesAndRewritesMockRequest(t *testing.T) {

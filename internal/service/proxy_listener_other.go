@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cautem/cautem-proxy/proxy"
+	"github.com/cautem/quarshell-proxy/proxy"
 )
 
 func serveUnixProxy(_ context.Context, _ *proxy.Server, _ string) error {

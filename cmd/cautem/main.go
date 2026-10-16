@@ -11,7 +11,7 @@ import (
 	"github.com/cautem/quarshell-cli/internal/app"
 	"github.com/cautem/quarshell-cli/internal/logger"
 	"github.com/cautem/quarshell-cli/internal/service"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-slogx"
 )
 
 func main() {

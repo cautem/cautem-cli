@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	controlv1 "github.com/cautem/cautem-proto/gen/go/cautem/control/v1"
-	"github.com/cautem/cautem-runtime/sandbox"
+	controlv1 "github.com/cautem/quarshell-proto/gen/go/cautem/control/v1"
+	"github.com/cautem/quarshell-runtime/sandbox"
 	"google.golang.org/grpc"
 )
 

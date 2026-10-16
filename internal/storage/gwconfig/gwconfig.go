@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cautem/cautem-core/defaults"
 	"github.com/cautem/quarshell-cli/internal/securefile"
+	"github.com/cautem/quarshell-core/defaults"
 	"gopkg.in/yaml.v3"
 )
 

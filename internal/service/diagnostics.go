@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-runtime/secrets"
 	"github.com/cautem/quarshell-cli/internal/outfmt"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-runtime/secrets"
 )
 
 // Banner is the short CLI intro.
