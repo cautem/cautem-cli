@@ -3,7 +3,7 @@ package osargs_test
 import (
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/osargs"
+	"github.com/cautem/quarshell-cli/internal/osargs"
 )
 
 func TestParseInferenceSet(t *testing.T) {

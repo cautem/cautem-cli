@@ -10,7 +10,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/cautem/cautem-cli/internal/securefile"
+	"github.com/cautem/quarshell-cli/internal/securefile"
 )
 
 // AliasPrefix names managed hosts; legacy entries use openshell-<name>.

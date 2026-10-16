@@ -5,11 +5,11 @@
   Create, harden, and operate policy-bound sandboxes — Cursor, Claude, Codex, and BYOC.
 </p>
 <p align="center">
-  <a href="https://github.com/cautem/cautem-cli/actions/workflows/ci.yml"><img src="https://github.com/cautem/cautem-cli/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/cautem/cautem-cli/releases"><img src="https://img.shields.io/github/v/release/cautem/cautem-cli?include_prereleases&sort=semver&label=release" alt="release"></a>
+  <a href="https://github.com/cautem/quarshell-cli/actions/workflows/ci.yml"><img src="https://github.com/cautem/quarshell-cli/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/cautem/quarshell-cli/releases"><img src="https://img.shields.io/github/v/release/cautem/cautem-cli?include_prereleases&sort=semver&label=release" alt="release"></a>
   <a href="https://img.shields.io/badge/status-v0.2.1-blue"><img src="https://img.shields.io/badge/status-v0.2.1-blue" alt="v0.2.1"></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/License-Apache--2.0-blue.svg" alt="License"></a>
-  <a href="https://github.com/cautem/cautem-cli"><img src="https://img.shields.io/badge/Go-1.27+-00ADD8?logo=go" alt="Go Version"></a>
+  <a href="https://github.com/cautem/quarshell-cli"><img src="https://img.shields.io/badge/Go-1.27+-00ADD8?logo=go" alt="Go Version"></a>
 </p>
 <p align="center">
   <sub>Part of the <a href="https://github.com/cautem">cautem / cautem</a> ecosystem</sub>

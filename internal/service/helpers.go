@@ -81,7 +81,7 @@ func resolveLinuxHelper(ctx context.Context, name, module string, build func(con
 }
 
 func ensureProxyBin(ctx context.Context) (string, error) {
-	return resolveLinuxHelper(ctx, helperCLI, "github.com/cautem/cautem-cli", driver.EnsureLinuxCLI)
+	return resolveLinuxHelper(ctx, helperCLI, "github.com/cautem/quarshell-cli", driver.EnsureLinuxCLI)
 }
 
 func ensureInitBin(ctx context.Context) (string, error) {

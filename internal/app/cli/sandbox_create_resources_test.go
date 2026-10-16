@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/service"
-	"github.com/cautem/cautem-cli/internal/storage/templates"
+	"github.com/cautem/quarshell-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/storage/templates"
 )
 
 func TestOptionalGPUCountParser(t *testing.T) {

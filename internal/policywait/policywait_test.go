@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/policywait"
+	"github.com/cautem/quarshell-cli/internal/policywait"
 )
 
 func TestFileAppliedSuccess(t *testing.T) {

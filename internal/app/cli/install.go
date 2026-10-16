@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"github.com/cautem/cautem-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/service"
 )
 
 func runInstall(a *service.App, args []string) error {

@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
 	"github.com/cautem/cautem-core/policy"
 	"github.com/cautem/cautem-driver/driver"
 	"github.com/cautem/cautem-providers/provider"
 	"github.com/cautem/cautem-proxy/proxy"
 	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 )
 
 // attachSupervisor wires the proxy sidecar as the sandbox supervisor

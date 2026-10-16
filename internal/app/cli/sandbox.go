@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/osargs"
-	"github.com/cautem/cautem-cli/internal/service"
-	"github.com/cautem/cautem-cli/internal/storage/templates"
+	"github.com/cautem/quarshell-cli/internal/osargs"
+	"github.com/cautem/quarshell-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/storage/templates"
 	"golang.org/x/term"
 )
 

@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/cautem/cautem-cli/internal/osargs"
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
+	"github.com/cautem/quarshell-cli/internal/osargs"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 )
 
 // GatewayAdd registers a named gateway in config.

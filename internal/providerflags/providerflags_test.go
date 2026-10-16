@@ -3,7 +3,7 @@ package providerflags_test
 import (
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/providerflags"
+	"github.com/cautem/quarshell-cli/internal/providerflags"
 )
 
 func TestParseCreateCompat(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/service"
 )
 
 func TestCopyCommandRequiresTwoPaths(t *testing.T) {

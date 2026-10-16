@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cautem/cautem-cli/internal/osargs"
 	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-cli/internal/osargs"
 )
 
 // InferenceRouteGet prints the gateway inference route.

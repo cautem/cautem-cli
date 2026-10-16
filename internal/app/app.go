@@ -4,8 +4,8 @@ package app
 import (
 	"context"
 
-	"github.com/cautem/cautem-cli/internal/app/cli"
-	"github.com/cautem/cautem-cli/internal/logger"
+	"github.com/cautem/quarshell-cli/internal/app/cli"
+	"github.com/cautem/quarshell-cli/internal/logger"
 )
 
 // Run initializes logging and executes the CLI.

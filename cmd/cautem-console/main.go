@@ -10,7 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/cautem/cautem-cli/internal/console"
+	"github.com/cautem/quarshell-cli/internal/console"
 )
 
 func main() {

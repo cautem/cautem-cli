@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cautem/cautem-cli/internal/osargs"
-	"github.com/cautem/cautem-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/osargs"
+	"github.com/cautem/quarshell-cli/internal/service"
 )
 
 func runPolicy(a *service.App, args []string) error {

@@ -109,7 +109,7 @@ Repos must exist on GitHub. From **inside** the sandbox:
 
 ```bash
 cd /workspace/cautem-cli
-git remote -v   # should be https://github.com/cautem/cautem-cli.git
+git remote -v   # should be https://github.com/cautem/quarshell-cli.git
 git push -u origin main
 ```
 
@@ -178,7 +178,7 @@ Token still needs GitHub permission (`repo` / admin on org). Policy only admits 
 gh repo create cautem/cautem-cli --private --source=/workspace/cautem-cli --remote=origin --push
 # or:
 gh api -X POST /orgs/cautem/repos -f name=cautem-cli -F private=true
-cd /workspace/cautem-cli && git remote add origin https://github.com/cautem/cautem-cli.git
+cd /workspace/cautem-cli && git remote add origin https://github.com/cautem/quarshell-cli.git
 git push -u origin main
 ```
 

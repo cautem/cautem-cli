@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cautem/cautem-cli/internal/providerflags"
-	"github.com/cautem/cautem-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/providerflags"
+	"github.com/cautem/quarshell-cli/internal/service"
 )
 
 func runProvider(a *service.App, args []string) error {

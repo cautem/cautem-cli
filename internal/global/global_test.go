@@ -3,7 +3,7 @@ package global_test
 import (
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/global"
+	"github.com/cautem/quarshell-cli/internal/global"
 )
 
 func TestParseGatewayAndOutput(t *testing.T) {
