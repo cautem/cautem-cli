@@ -107,7 +107,7 @@ Only dangling anonymous test volumes and stopped containers labeled
 The older server-rendered Go console ships as `cautem-console` in Linux and
 macOS Cautem release archives and is installed by `install.sh`. It uses the
 public Go SDK and keeps OIDC tokens in server-side sessions. The target browser
-console is the separate PWA in [`cautem-ui`](https://github.com/cautem/cautem-ui),
+console is the separate PWA in [`cautem-ui`](https://github.com/cautem/quarshell-ui),
 which calls the Gateway API through its typed client and does not run the CLI. The Go
 console remains during the transition and will leave CLI release packaging
 after the PWA acceptance in plan 2. Local development can use loopback auth:

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 // This acceptance test runs the public create path against a configured local

@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"github.com/cautem/cautem-providers/provider"
+	"github.com/cautem/quarshell-providers/provider"
 )
 
 func TestProfileRefreshConfigMapsSecretsAndOutputs(t *testing.T) {

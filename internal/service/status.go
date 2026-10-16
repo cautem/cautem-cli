@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/outfmt"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 // StatusSnapshot is structured status for -o json|yaml.

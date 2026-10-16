@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 // Linux helper binaries mounted into sandboxes and proxy sidecars. Release
@@ -85,15 +85,15 @@ func ensureProxyBin(ctx context.Context) (string, error) {
 }
 
 func ensureInitBin(ctx context.Context) (string, error) {
-	return resolveLinuxHelper(ctx, helperInit, "github.com/cautem/cautem-runtime", driver.EnsureLinuxInit)
+	return resolveLinuxHelper(ctx, helperInit, "github.com/cautem/quarshell-runtime", driver.EnsureLinuxInit)
 }
 
 func ensureSSHDBin(ctx context.Context) (string, error) {
-	return resolveLinuxHelper(ctx, helperSSHD, "github.com/cautem/cautem-runtime", driver.EnsureLinuxSSHD)
+	return resolveLinuxHelper(ctx, helperSSHD, "github.com/cautem/quarshell-runtime", driver.EnsureLinuxSSHD)
 }
 
 func ensureSupervisorBin(ctx context.Context) (string, error) {
-	return resolveLinuxHelper(ctx, helperSupervisor, "github.com/cautem/cautem-runtime", driver.EnsureLinuxSupervisor)
+	return resolveLinuxHelper(ctx, helperSupervisor, "github.com/cautem/quarshell-runtime", driver.EnsureLinuxSupervisor)
 }
 
 // helperStatus reports where linux helpers come from, without building.
@@ -110,7 +110,7 @@ func helperStatus() string {
 	if len(missing) == 0 {
 		return "bundled (" + dir + ")"
 	}
-	if _, err := findModuleDir("github.com/cautem/cautem-runtime"); err == nil {
+	if _, err := findModuleDir("github.com/cautem/quarshell-runtime"); err == nil {
 		if _, err := exec.LookPath("go"); err == nil {
 			return "source checkout (cross-compiled on demand)"
 		}

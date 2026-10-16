@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cautem/cautem-runtime/idp"
+	"github.com/cautem/quarshell-runtime/idp"
 )
 
 func TestNewRejectsPublicNetworkHTTP(t *testing.T) {

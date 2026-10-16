@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 	"golang.org/x/term"
 )
 

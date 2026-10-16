@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	core "github.com/cautem/cautem-core"
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-runtime/agentconfig"
+	core "github.com/cautem/quarshell-core"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-runtime/agentconfig"
 )
 
 type guestDriver interface {

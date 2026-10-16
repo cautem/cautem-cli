@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-core/defaults"
-	display "github.com/cautem/cautem-display"
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-runtime/sandbox"
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/ui"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-core/defaults"
+	display "github.com/cautem/quarshell-display"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-runtime/sandbox"
+	"github.com/cautem/quarshell-sdk/go/cautem"
+	"github.com/cautem/quarshell-slogx"
 	"golang.org/x/term"
 )
 

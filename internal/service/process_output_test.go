@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 func TestWriteExecResultWritesCapturedStreams(t *testing.T) {

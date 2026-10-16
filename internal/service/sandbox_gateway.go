@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 	"golang.org/x/term"
 )
 

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-slogx"
 )
 
 const localGatewayName = "local"

@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/cautem-runtime/refresh"
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/outfmt"
 	"github.com/cautem/quarshell-cli/internal/providerflags"
 	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-runtime/refresh"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 // ProviderGet prints provider metadata (no secret values).

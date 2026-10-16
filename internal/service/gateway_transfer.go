@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 // uploadGatewayPath sends a tar archive over the Gateway's existing interactive

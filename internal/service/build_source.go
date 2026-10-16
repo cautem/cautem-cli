@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 func buildLocalSourceImage(ctx context.Context, compute driver.ComputeDriver, contextDir, dockerfile, sandboxName string, output io.Writer) (string, error) {

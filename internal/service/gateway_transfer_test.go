@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 type transferInteractiveSession struct {

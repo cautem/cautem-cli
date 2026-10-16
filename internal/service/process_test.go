@@ -12,12 +12,12 @@ import (
 	"testing"
 	"time"
 
-	core "github.com/cautem/cautem-core"
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-runtime/sandbox"
-	"github.com/cautem/cautem-sdk/go/cautem"
 	"github.com/cautem/quarshell-cli/internal/storage/sandboxstate"
+	core "github.com/cautem/quarshell-core"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-runtime/sandbox"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 func TestExecAppliesRequestedTimeoutToDriverContext(t *testing.T) {

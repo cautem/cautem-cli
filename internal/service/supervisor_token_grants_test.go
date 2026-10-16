@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/cautem/cautem-providers/provider"
-	"github.com/cautem/cautem-proxy/proxy"
-	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-providers/provider"
+	"github.com/cautem/quarshell-proxy/proxy"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 func TestSandboxTokenGrantsPackagesAttachedProfileMetadata(t *testing.T) {

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	core "github.com/cautem/cautem-core"
-	"github.com/cautem/cautem-driver/driver"
-	"github.com/cautem/cautem-runtime/sandbox"
+	core "github.com/cautem/quarshell-core"
+	"github.com/cautem/quarshell-driver/driver"
+	"github.com/cautem/quarshell-runtime/sandbox"
 )
 
 func TestSandboxUploadSendsGitFilteredTreeToDriver(t *testing.T) {

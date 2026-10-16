@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 // ParseCPUQuantity accepts OpenShell-style CPU quantities expressed as cores

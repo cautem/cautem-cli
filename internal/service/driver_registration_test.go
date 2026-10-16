@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"github.com/cautem/cautem-driver/driver"
+	"github.com/cautem/quarshell-driver/driver"
 )
 
 func TestCLIRegistersBuiltInComputeDrivers(t *testing.T) {

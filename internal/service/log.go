@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/cautem/quarshell-cli/internal/logger"
-	"github.com/cautem/slogx"
+	"github.com/cautem/quarshell-slogx"
 )
 
 // opLogger returns a context logger tagged with a stable operation name

@@ -10,12 +10,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/cautem/cautem-core/engine"
-	display "github.com/cautem/cautem-display"
-	"github.com/cautem/cautem-driver/driver"
-	_ "github.com/cautem/cautem-driver/driver/all"
-	"github.com/cautem/cautem-proxy/proxy"
-	"github.com/cautem/cautem-runtime/sandbox"
+	"github.com/cautem/quarshell-core/engine"
+	display "github.com/cautem/quarshell-display"
+	"github.com/cautem/quarshell-driver/driver"
+	_ "github.com/cautem/quarshell-driver/driver/all"
+	"github.com/cautem/quarshell-proxy/proxy"
+	"github.com/cautem/quarshell-runtime/sandbox"
 )
 
 // managedSecretKeys tracks keys that must not fall back to host environment

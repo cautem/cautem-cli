@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cautem/cautem-runtime/idp"
-	cautem "github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-runtime/idp"
+	cautem "github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 const (

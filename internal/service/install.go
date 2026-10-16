@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cautem/cautem-core/defaults"
+	"github.com/cautem/quarshell-core/defaults"
 )
 
 // InstallOpts for `cautem install`.

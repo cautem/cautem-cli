@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cautem/cautem-core/engine"
-	"github.com/cautem/cautem-proxy/proxy"
+	"github.com/cautem/quarshell-core/engine"
+	"github.com/cautem/quarshell-proxy/proxy"
 )
 
 func TestServeUnixProxyUsesDefaultDenyAndCleansSocket(t *testing.T) {

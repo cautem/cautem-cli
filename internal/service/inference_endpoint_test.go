@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/cautem/cautem-core/defaults"
-	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-core/defaults"
+	"github.com/cautem/quarshell-sdk/go/cautem"
 )
 
 type providerEndpointStub struct{ record cautem.ProviderRecord }
