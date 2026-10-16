@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -319,12 +320,18 @@ func writeJSONMap(path string, m map[string]any) error {
 }
 
 // WorkspaceCreate registers a named workspace on the gateway (local fallback).
-func (a *App) WorkspaceCreate(name string) error {
+func (a *App) WorkspaceCreate(name string, labels ...map[string]string) error {
+	workspaceLabels := map[string]string{}
+	if len(labels) > 0 {
+		for key, value := range labels[0] {
+			workspaceLabels[key] = value
+		}
+	}
 	if c, err := a.gatewayClient(); err == nil {
 		ctx, cancel := a.withTimeout(TimeoutAPI)
 		defer cancel()
 		if _, err := c.Healthz(ctx); err == nil {
-			if _, err := c.CreateWorkspace(ctx, name); err != nil {
+			if _, err := c.CreateWorkspaceWithLabels(ctx, name, workspaceLabels); err != nil {
 				return err
 			}
 			fmt.Printf("workspace %s created\n", name)
@@ -340,7 +347,7 @@ func (a *App) WorkspaceCreate(name string) error {
 	if err != nil {
 		return err
 	}
-	m[name] = map[string]any{"name": name, "created_at": time.Now().UTC().Format(time.RFC3339), "members": []any{}}
+	m[name] = map[string]any{"name": name, "created_at": time.Now().UTC().Format(time.RFC3339), "members": []any{}, "labels": workspaceLabels}
 	if err := writeJSONMap(path, m); err != nil {
 		return err
 	}
@@ -348,15 +355,57 @@ func (a *App) WorkspaceCreate(name string) error {
 	return nil
 }
 
-func (a *App) WorkspaceList() error {
+type WorkspaceListOptions struct {
+	PageSize      int
+	PageToken     string
+	LabelSelector string
+	Output        string
+}
+
+type workspaceListOutput struct {
+	Workspaces    []workspaceListItem `json:"workspaces" yaml:"workspaces"`
+	NextPageToken string              `json:"next_page_token" yaml:"next_page_token"`
+}
+
+type workspaceListItem struct {
+	ID              string            `json:"id,omitempty" yaml:"id,omitempty"`
+	Name            string            `json:"name" yaml:"name"`
+	ResourceVersion *uint64           `json:"resource_version,omitempty" yaml:"resource_version,omitempty"`
+	Status          string            `json:"status,omitempty" yaml:"status,omitempty"`
+	CreatedAt       string            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Labels          map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+}
+
+func (a *App) WorkspaceList(options ...WorkspaceListOptions) error {
+	opts := WorkspaceListOptions{PageSize: 100}
+	if len(options) > 0 {
+		opts = options[0]
+		if opts.PageSize <= 0 {
+			opts.PageSize = 100
+		}
+	}
+	if opts.Output == "" && a != nil {
+		opts.Output = a.OutputFormat
+	}
 	if c, err := a.gatewayClient(); err == nil {
 		ctx, cancel := a.withTimeout(TimeoutAPI)
 		defer cancel()
-		if list, err := c.ListWorkspaces(ctx); err == nil {
-			for _, ws := range list {
-				fmt.Println(ws.Name)
+		if _, err := c.Healthz(ctx); err == nil {
+			page, err := c.ListWorkspacesPage(ctx, cautem.WorkspaceListOptions{
+				PageSize: opts.PageSize, PageToken: opts.PageToken, LabelSelector: opts.LabelSelector,
+			})
+			if err != nil {
+				return err
 			}
-			return nil
+			items := make([]workspaceListItem, 0, len(page.Workspaces))
+			for _, workspace := range page.Workspaces {
+				resourceVersion := workspace.ResourceVersion
+				items = append(items, workspaceListItem{
+					ID: workspace.ID, Name: workspace.Name, ResourceVersion: &resourceVersion,
+					Status: workspace.Status, CreatedAt: formatWorkspaceTimestamp(workspace.CreatedAt), Labels: workspace.Labels,
+				})
+			}
+			return emitWorkspaceList(opts.Output, workspaceListOutput{Workspaces: items, NextPageToken: page.NextPageToken})
 		}
 	}
 	dir, err := localParityDir()
@@ -367,10 +416,159 @@ func (a *App) WorkspaceList() error {
 	if err != nil {
 		return err
 	}
-	for k := range m {
-		fmt.Println(k)
+	names := make([]string, 0, len(m))
+	for name := range m {
+		names = append(names, name)
 	}
-	return nil
+	sort.Strings(names)
+	requiredLabels, err := parseWorkspaceLabelSelector(opts.LabelSelector)
+	if err != nil {
+		return err
+	}
+	if len(requiredLabels) > 0 {
+		filtered := names[:0]
+		for _, name := range names {
+			record, _ := m[name].(map[string]any)
+			labels, _ := record["labels"].(map[string]any)
+			if workspaceLabelsMatch(labels, requiredLabels) {
+				filtered = append(filtered, name)
+			}
+		}
+		names = filtered
+	}
+	start := 0
+	if opts.PageToken != "" {
+		for i, name := range names {
+			if name == opts.PageToken {
+				start = i + 1
+				break
+			}
+		}
+		if start == 0 {
+			return fmt.Errorf("workspace page token %q does not match a local workspace", opts.PageToken)
+		}
+	}
+	if start > len(names) {
+		start = len(names)
+	}
+	end := min(start+opts.PageSize, len(names))
+	items := make([]workspaceListItem, 0, end-start)
+	for _, name := range names[start:end] {
+		record, _ := m[name].(map[string]any)
+		item := workspaceListItem{Name: name}
+		if created, ok := record["created_at"].(string); ok {
+			item.CreatedAt = formatWorkspaceTimestamp(created)
+		}
+		if rawLabels, ok := record["labels"].(map[string]any); ok {
+			item.Labels = make(map[string]string, len(rawLabels))
+			for key, value := range rawLabels {
+				if label, ok := value.(string); ok {
+					item.Labels[key] = label
+				}
+			}
+		}
+		items = append(items, item)
+	}
+	next := ""
+	if end < len(names) && end > start {
+		next = names[end-1]
+	}
+	return emitWorkspaceList(opts.Output, workspaceListOutput{Workspaces: items, NextPageToken: next})
+}
+
+func parseWorkspaceLabelSelector(selector string) (map[string]string, error) {
+	if strings.TrimSpace(selector) == "" {
+		return nil, nil
+	}
+	requirements := make(map[string]string)
+	pairs := 0
+	for _, rawPair := range strings.Split(selector, ",") {
+		pair := strings.TrimSpace(rawPair)
+		if pair == "" {
+			continue
+		}
+		pairs++
+		if pairs > 64 {
+			return nil, fmt.Errorf("label selector exceeds 64 pair limit")
+		}
+		key, value, ok := strings.Cut(pair, "=")
+		if !ok {
+			return nil, fmt.Errorf("invalid label selector: expected 'key=value', got %q", pair)
+		}
+		key = strings.TrimSpace(key)
+		value = strings.TrimSpace(value)
+		if err := validateSandboxLabelKey(key); err != nil {
+			return nil, fmt.Errorf("invalid label selector key %q: %w", key, err)
+		}
+		if err := validateSandboxLabelValue(value); err != nil {
+			return nil, fmt.Errorf("invalid label selector value for %q: %w", key, err)
+		}
+		requirements[key] = value
+	}
+	return requirements, nil
+}
+
+func workspaceLabelsMatch(labels map[string]any, requirements map[string]string) bool {
+	for key, want := range requirements {
+		got, ok := labels[key].(string)
+		if !ok || got != want {
+			return false
+		}
+	}
+	return true
+}
+
+func formatWorkspaceTimestamp(value string) string {
+	if value == "" {
+		return ""
+	}
+	created, err := time.Parse(time.RFC3339Nano, value)
+	if err != nil {
+		return value
+	}
+	return created.UTC().Format("2006-01-02 15:04:05")
+}
+
+func emitWorkspaceList(output string, page workspaceListOutput) error {
+	return writeWorkspaceListWithToken(os.Stdout, os.Stderr, output, page)
+}
+
+func writeWorkspaceList(w io.Writer, output string, page workspaceListOutput) error {
+	return writeWorkspaceListWithToken(w, w, output, page)
+}
+
+func writeWorkspaceListWithToken(w, tokenWriter io.Writer, output string, page workspaceListOutput) error {
+	if err := outfmt.Emit(w, output, func(w io.Writer) error {
+		if len(page.Workspaces) == 0 {
+			_, err := fmt.Fprintln(w, "No workspaces found.")
+			return err
+		}
+		nameWidth := len("NAME")
+		for _, workspace := range page.Workspaces {
+			nameWidth = max(nameWidth, len(workspace.Name))
+		}
+		if _, err := fmt.Fprintf(w, "%-*s  %-12s  %-20s  %s\n", nameWidth, "NAME", "STATUS", "CREATED", "LABELS"); err != nil {
+			return err
+		}
+		for _, workspace := range page.Workspaces {
+			labels := make([]string, 0, len(workspace.Labels))
+			for key, value := range workspace.Labels {
+				labels = append(labels, key+"="+value)
+			}
+			sort.Strings(labels)
+			if _, err := fmt.Fprintf(w, "%-*s  %-12s  %-20s  %s\n", nameWidth, workspace.Name, workspace.Status, workspace.CreatedAt, strings.Join(labels, ",")); err != nil {
+				return err
+			}
+		}
+		return nil
+	}, page); err != nil {
+		return err
+	}
+	if output == "json" || output == "yaml" || output == "yml" || page.NextPageToken == "" {
+		return nil
+	}
+	_, err := fmt.Fprintf(tokenWriter, "Next page token: %s\n", page.NextPageToken)
+	return err
 }
 
 func (a *App) WorkspaceGet(name string) error {

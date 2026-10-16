@@ -3,6 +3,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -15,7 +16,7 @@ import (
 	"golang.org/x/term"
 )
 
-// Execute runs the CLI with OpenShell command names and argv shapes.
+// Execute runs the CLI with its public command names and argument shapes.
 func Execute(ctx context.Context, args []string) error {
 	if ctx == nil {
 		ctx = context.Background()
@@ -33,7 +34,7 @@ func execute(a *service.App, args []string) error {
 	}
 	if len(args) == 0 {
 		fmt.Println(a.Banner())
-		fmt.Println("commands: sandbox|exec|provider|profile|policy|gateway|logs|term|status|health|init|doctor|whoami|workspace|forward|service|settings|inference|…")
+		fmt.Println("commands: sandbox|cp|exec|provider|profile|policy|gateway|logs|term|status|health|init|doctor|whoami|workspace|forward|service|settings|inference|…")
 		fmt.Println("run 'cautem --help' for full usage")
 		return nil
 	}
@@ -41,13 +42,22 @@ func execute(a *service.App, args []string) error {
 	log.Info("running command")
 	switch args[0] {
 	case "version":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem version")
+		}
 		fmt.Println(a.Version())
 		return nil
 	case "health":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem health")
+		}
 		return a.Health()
 	case "init":
 		return runInit(a, args[1:])
 	case "status":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem status")
+		}
 		return a.Status()
 	case "doctor", "dr":
 		return runDoctor(a, args[1:])
@@ -57,6 +67,11 @@ func execute(a *service.App, args []string) error {
 		return runSandbox(a, args[1:])
 	case "exec":
 		return runExec(a, args[1:])
+	case "cp":
+		if len(args) != 3 {
+			return fmt.Errorf("usage: cautem cp <local-path> <sandbox>:/path OR cautem cp <sandbox>:/path <local-path>")
+		}
+		return a.Copy(args[1], args[2])
 	case "term":
 		return runTerm(a, args[1:])
 	case "gateway", "gw":
@@ -68,6 +83,9 @@ func execute(a *service.App, args []string) error {
 	case "profile":
 		return runProvider(a, append([]string{"profile"}, args[1:]...))
 	case "whoami":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem whoami")
+		}
 		return a.Whoami()
 	case "workspace", "ws":
 		return runWorkspace(a, args[1:])
@@ -91,12 +109,12 @@ func execute(a *service.App, args []string) error {
 	case "install":
 		return runInstall(a, args[1:])
 	default:
-		return fmt.Errorf("unknown command %q (try: status|health|init|exec|doctor|sandbox|provider|policy|gateway|logs|workspace|forward|service|settings|whoami|term)", args[0])
+		return fmt.Errorf("unknown command %q (try: status|health|init|exec|cp|doctor|sandbox|provider|policy|gateway|logs|workspace|forward|service|settings|whoami|term)", args[0])
 	}
 }
 
 func runCompletions(args []string) error {
-	if len(args) == 0 {
+	if len(args) != 1 {
 		return fmt.Errorf("usage: cautem completions <bash|zsh|fish|powershell>")
 	}
 	shell := strings.ToLower(args[0])
@@ -143,7 +161,10 @@ func runInit(a *service.App, args []string) error {
 	return a.Init(opt)
 }
 
-func runTerm(a *service.App, _ []string) error {
+func runTerm(a *service.App, args []string) error {
+	if len(args) != 0 {
+		return fmt.Errorf("usage: cautem term")
+	}
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
 		return fmt.Errorf("cautem term: requires an interactive terminal")
 	}
@@ -168,41 +189,87 @@ func runTerm(a *service.App, _ []string) error {
 // Main is a helper for tests / embedding.
 func Main() {
 	if err := Execute(context.Background(), os.Args[1:]); err != nil {
+		if code, ok := service.ExitCode(err); ok {
+			os.Exit(code)
+		}
+		if errors.Is(err, context.Canceled) {
+			os.Exit(130)
+		}
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-// parseProfileIO accepts positional path/id and OpenShell -f/--file, -o/--output.
-
-// parseProfileIO accepts positional path/id and OpenShell -f/--file, -o/--output.
+// parseProfileIO accepts positional paths or IDs and the common file/output flags.
 func parseProfileIO(args []string, fileMode bool) (pathOrID, outFmt string, err error) {
 	outFmt = "yaml"
+	seenPath := false
+	seenOutput := false
 	for i := 0; i < len(args); i++ {
-		switch args[i] {
-		case "-f", "--file", "--url", "--from":
-			i++
-			if i >= len(args) {
-				return "", "", fmt.Errorf("%s needs a path", args[i-1])
-			}
-			pathOrID = args[i]
-		case "-o", "--output":
-			i++
-			if i >= len(args) {
-				return "", "", fmt.Errorf("%s needs yaml|json", args[i-1])
-			}
-			outFmt = strings.ToLower(args[i])
-		default:
-			if strings.HasPrefix(args[i], "-") {
-				return "", "", fmt.Errorf("unknown flag %q", args[i])
-			}
-			if pathOrID == "" {
-				pathOrID = args[i]
+		arg := args[i]
+		if key, value, ok := strings.Cut(arg, "="); ok {
+			switch key {
+			case "--file", "--url", "--from":
+				if seenPath {
+					return "", "", fmt.Errorf("profile source may be specified only once")
+				}
+				if strings.TrimSpace(value) == "" {
+					return "", "", fmt.Errorf("%s needs a path", key)
+				}
+				pathOrID, seenPath = value, true
+				continue
+			case "-o", "--output":
+				if fileMode {
+					return "", "", fmt.Errorf("%s is not supported for this profile command", key)
+				}
+				if seenOutput {
+					return "", "", fmt.Errorf("profile output format may be specified only once")
+				}
+				outFmt, seenOutput = strings.ToLower(value), true
+				if outFmt != "yaml" && outFmt != "json" {
+					return "", "", fmt.Errorf("%s needs yaml|json", key)
+				}
+				continue
 			}
 		}
+		switch arg {
+		case "-f", "--file", "--url", "--from":
+			if seenPath {
+				return "", "", fmt.Errorf("profile source may be specified only once")
+			}
+			i++
+			if i >= len(args) {
+				return "", "", fmt.Errorf("%s needs a path", arg)
+			}
+			if strings.TrimSpace(args[i]) == "" || strings.HasPrefix(args[i], "-") {
+				return "", "", fmt.Errorf("%s needs a path", arg)
+			}
+			pathOrID, seenPath = args[i], true
+		case "-o", "--output":
+			if fileMode {
+				return "", "", fmt.Errorf("%s is not supported for this profile command", arg)
+			}
+			if seenOutput {
+				return "", "", fmt.Errorf("profile output format may be specified only once")
+			}
+			i++
+			if i >= len(args) {
+				return "", "", fmt.Errorf("%s needs yaml|json", arg)
+			}
+			outFmt = strings.ToLower(args[i])
+			if outFmt != "yaml" && outFmt != "json" {
+				return "", "", fmt.Errorf("%s needs yaml|json", arg)
+			}
+			seenOutput = true
+		default:
+			if strings.HasPrefix(arg, "-") {
+				return "", "", fmt.Errorf("unknown flag %q", arg)
+			}
+			if seenPath {
+				return "", "", fmt.Errorf("unexpected extra argument %q", arg)
+			}
+			pathOrID, seenPath = arg, true
+		}
 	}
-	_ = fileMode
 	return pathOrID, outFmt, nil
 }
-
-// runSSHProxy is the OpenShell ProxyCommand hook (token / name / legacy modes).

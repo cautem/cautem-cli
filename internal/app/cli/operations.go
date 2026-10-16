@@ -33,6 +33,9 @@ func runForward(a *service.App, args []string) error {
 		}
 		return a.ForwardStop(id)
 	case "list", "ls":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem forward list")
+		}
 		return a.ForwardList()
 	case "service":
 		return fmt.Errorf("forward service: use cautem service expose")
@@ -53,10 +56,16 @@ func runService(a *service.App, args []string) error {
 		}
 		return a.ServiceExpose(parsed.Sandbox, parsed.Service, parsed.Port)
 	case "list", "ls":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem service list")
+		}
 		return a.ServiceList()
 	case "get":
 		if len(args) < 2 {
 			return fmt.Errorf("usage: cautem service get <sandbox> [service]")
+		}
+		if len(args) > 3 {
+			return fmt.Errorf("unexpected argument %q", args[3])
 		}
 		name := "default"
 		if len(args) > 2 {
@@ -66,6 +75,9 @@ func runService(a *service.App, args []string) error {
 	case "delete", "rm":
 		if len(args) < 2 {
 			return fmt.Errorf("usage: cautem service delete <sandbox> [service]")
+		}
+		if len(args) > 3 {
+			return fmt.Errorf("unexpected argument %q", args[3])
 		}
 		name := "default"
 		if len(args) > 2 {
@@ -85,23 +97,34 @@ func runRule(a *service.App, args []string) error {
 	case "get", "list", "ls":
 		status := ""
 		sandbox := ""
+		seenStatus := false
 		for i := 1; i < len(args); i++ {
 			switch args[i] {
 			case "--status":
+				if seenStatus {
+					return fmt.Errorf("--status may be specified only once")
+				}
 				i++
 				if i >= len(args) {
 					return fmt.Errorf("--status needs pending|approved|rejected")
 				}
 				status = args[i]
+				seenStatus = true
 			default:
 				if strings.HasPrefix(args[i], "-") {
 					return fmt.Errorf("unknown flag %q", args[i])
+				}
+				if sandbox != "" {
+					return fmt.Errorf("usage: cautem rule get [sandbox] [--status STATUS]")
 				}
 				sandbox = args[i]
 			}
 		}
 		return a.RuleListFilter(sandbox, status)
 	case "history":
+		if len(args) > 2 {
+			return fmt.Errorf("usage: cautem rule history [sandbox]")
+		}
 		sandbox := ""
 		if len(args) > 1 {
 			sandbox = args[1]
@@ -137,6 +160,9 @@ func runRule(a *service.App, args []string) error {
 		}
 		return a.RuleRejectReason(id, reason)
 	case "clear":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem rule clear")
+		}
 		return a.RuleClear()
 	default:
 		return fmt.Errorf("unknown rule subcommand %q", args[0])
@@ -144,27 +170,37 @@ func runRule(a *service.App, args []string) error {
 }
 
 func parseRuleAction(args []string) (id, reason string, err error) {
+	seenID, seenReason := false, false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--chunk-id":
+			if seenID {
+				return "", "", fmt.Errorf("chunk ID may be specified only once")
+			}
 			i++
 			if i >= len(args) {
 				return "", "", fmt.Errorf("--chunk-id needs a value")
 			}
 			id = args[i]
+			seenID = true
 		case "--reason":
+			if seenReason {
+				return "", "", fmt.Errorf("--reason may be specified only once")
+			}
 			i++
 			if i >= len(args) {
 				return "", "", fmt.Errorf("--reason needs a value")
 			}
 			reason = args[i]
+			seenReason = true
 		default:
 			if strings.HasPrefix(args[i], "-") {
 				return "", "", fmt.Errorf("unknown flag %q", args[i])
 			}
-			if id == "" {
-				id = args[i]
+			if seenID {
+				return "", "", fmt.Errorf("unexpected extra argument %q", args[i])
 			}
+			id, seenID = args[i], true
 		}
 	}
 	if id == "" {
@@ -179,11 +215,13 @@ func runLogs(a *service.App, args []string) error {
 		return err
 	}
 	opt := service.LogsOpts{
-		Follow: parsed.Tail,
-		All:    parsed.All,
-		Since:  parsed.Since,
-		Source: parsed.Source,
-		Level:  parsed.Level,
+		Follow:   parsed.Tail,
+		All:      parsed.All,
+		Lines:    uint32(parsed.N),
+		LinesSet: parsed.NSet,
+		Since:    parsed.Since,
+		Source:   parsed.Source,
+		Level:    parsed.Level,
 	}
 	if parsed.Name != "" {
 		for n := range strings.SplitSeq(parsed.Name, ",") {
@@ -192,9 +230,6 @@ func runLogs(a *service.App, args []string) error {
 				opt.Names = append(opt.Names, n)
 			}
 		}
-	}
-	if !opt.All && len(opt.Names) == 0 {
-		return fmt.Errorf("usage: cautem logs <name> [--tail] [-n N] [--since 5m] [--source sandbox] [--level warn]")
 	}
 	return a.LogsOpts(opt)
 }
@@ -205,6 +240,9 @@ func runInference(a *service.App, args []string) error {
 	}
 	switch args[0] {
 	case "get":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem inference get")
+		}
 		return a.InferenceRouteGet()
 	case "set", "update":
 		parsed, err := osargs.ParseInferenceSet(args[1:])
@@ -213,16 +251,28 @@ func runInference(a *service.App, args []string) error {
 		}
 		return a.InferenceRouteSet(parsed)
 	case "list", "ls":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem inference list")
+		}
 		return a.InferenceList()
 	case "show":
+		if len(args) > 2 {
+			return fmt.Errorf("usage: cautem inference show [path]")
+		}
 		path := ""
 		if len(args) > 1 {
 			path = args[1]
 		}
 		return a.InferenceShow(path)
 	case "local":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem inference local")
+		}
 		return a.InferenceLocal()
 	case "delete", "rm":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem inference delete")
+		}
 		return a.InferenceRouteDelete()
 	default:
 		return fmt.Errorf("unknown inference subcommand %q", args[0])

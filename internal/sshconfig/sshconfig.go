@@ -13,7 +13,7 @@ import (
 	"github.com/cautem/cautem-cli/internal/securefile"
 )
 
-// AliasPrefix names managed hosts (OpenShell: openshell-<name>).
+// AliasPrefix names managed hosts; legacy entries use openshell-<name>.
 const AliasPrefix = "cautem-"
 
 // Alias returns the managed Host alias for a sandbox.

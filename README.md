@@ -70,6 +70,27 @@ go build -C cautem-cli -o ../cautem-console ./cmd/cautem-console
 ./cautem sandbox rm demo
 ```
 
+Create on the selected Gateway compute backend with a published OCI image or a
+workspace-scoped shared template:
+
+```bash
+./cautem sandbox template create shared-agent --gateway \
+  --image ghcr.io/example/agent:stable --cpu 2 --memory 4Gi --env MODE=fast
+./cautem sandbox create --remote --gateway-workspace team \
+  --name agent --image ghcr.io/example/agent:stable \
+  --cpu 500m --memory 2Gi --gpu 1 --env MODE=fast
+```
+
+Gateway create does not use the local Docker/Podman driver. Image based remote
+creates accept CPU, memory, GPU count, environment, labels and per-driver config
+overrides. A shared template owns its workload settings and rejects inline
+workload overrides. A remote main command currently runs detached because
+foreground attach has not been connected yet.
+
+To reconnect to a detached canonical process, run `cautem sandbox attach demo`.
+Add `--tty` for a process created with `sandbox create --tty --detach`; attach
+reconnects stdin, output, terminal resize, and the process exit status.
+
 Testcontainers cleanup is exposed through the CLI rather than a broad Docker
 prune:
 
@@ -81,12 +102,15 @@ prune:
 Only dangling anonymous test volumes and stopped containers labeled
 `cautem=1` are in scope.
 
-### Browser console
+### Standalone Go console (Cautem transition)
 
-The Go console ships as `cautem-console` in Linux and macOS release archives
-and is installed by `install.sh`. It uses the public Go SDK and keeps OIDC
-tokens in server-side sessions. Local development can use the loopback auth
-bootstrap:
+The older server-rendered Go console ships as `cautem-console` in Linux and
+macOS Cautem release archives and is installed by `install.sh`. It uses the
+public Go SDK and keeps OIDC tokens in server-side sessions. The target browser
+console is the separate PWA in [`cautem-ui`](https://github.com/cautem/cautem-ui),
+which calls the Gateway API through its typed client and does not run the CLI. The Go
+console remains during the transition and will leave CLI release packaging
+after the PWA acceptance in plan 2. Local development can use loopback auth:
 
 ```bash
 cautem-console \

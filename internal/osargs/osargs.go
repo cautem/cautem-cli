@@ -7,7 +7,86 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
+
+// SandboxDelete parses `sandbox delete NAME...` and `sandbox delete --all`.
+type SandboxDelete struct {
+	Names []string
+	All   bool
+}
+
+// SandboxAttach parses `sandbox attach NAME [--tty]`.
+type SandboxAttach struct {
+	Name string
+	TTY  bool
+}
+
+func ParseSandboxAttach(args []string) (SandboxAttach, error) {
+	var out SandboxAttach
+	seenTTY := false
+	for _, arg := range args {
+		switch arg {
+		case "--tty", "-t":
+			if seenTTY {
+				return SandboxAttach{}, fmt.Errorf("sandbox attach: duplicate --tty")
+			}
+			out.TTY = true
+			seenTTY = true
+		default:
+			if strings.HasPrefix(arg, "-") {
+				return SandboxAttach{}, fmt.Errorf("sandbox attach: unknown flag %q", arg)
+			}
+			if out.Name != "" {
+				return SandboxAttach{}, fmt.Errorf("usage: cautem sandbox attach NAME [--tty]")
+			}
+			out.Name = arg
+		}
+	}
+	if out.Name == "" {
+		return SandboxAttach{}, fmt.Errorf("usage: cautem sandbox attach NAME [--tty]")
+	}
+	return out, nil
+}
+
+// ParseSandboxTarget parses commands that accept one optional sandbox name.
+func ParseSandboxTarget(args []string, command string) (string, error) {
+	if len(args) > 1 {
+		return "", fmt.Errorf("usage: cautem sandbox %s [name]", command)
+	}
+	if len(args) == 1 {
+		if args[0] == "" || strings.HasPrefix(args[0], "-") {
+			return "", fmt.Errorf("sandbox %s: expected a sandbox name", command)
+		}
+		return args[0], nil
+	}
+	return "", nil
+}
+
+// ParseSandboxDelete accepts one or more sandbox names, or --all exclusively.
+func ParseSandboxDelete(args []string) (SandboxDelete, error) {
+	var out SandboxDelete
+	for _, arg := range args {
+		if arg == "--all" {
+			if out.All || len(out.Names) > 0 {
+				return SandboxDelete{}, fmt.Errorf("sandbox delete: --all conflicts with sandbox names")
+			}
+			out.All = true
+			continue
+		}
+		if strings.HasPrefix(arg, "-") {
+			return SandboxDelete{}, fmt.Errorf("sandbox delete: unknown flag %q", arg)
+		}
+		if out.All {
+			return SandboxDelete{}, fmt.Errorf("sandbox delete: --all conflicts with sandbox names")
+		}
+		out.Names = append(out.Names, arg)
+	}
+	if len(out.Names) == 0 && !out.All {
+		return SandboxDelete{}, fmt.Errorf("usage: cautem sandbox delete <name>... | --all")
+	}
+	return out, nil
+}
 
 // GatewayAdd is `openshell gateway add <endpoint> [--name NAME] [--local|--remote USER@HOST]`.
 type GatewayAdd struct {
@@ -313,19 +392,33 @@ func ParseSettingsSet(args []string) (SettingsSet, error) {
 
 // SandboxTransfer is upload/download: NAME PATH [DEST].
 type SandboxTransfer struct {
-	Name string
-	Path string
-	Dest string
+	Name        string
+	Path        string
+	Dest        string
+	NoGitIgnore bool
 }
 
 // ParseSandboxTransfer parses args after upload|download.
 func ParseSandboxTransfer(args []string) (SandboxTransfer, error) {
-	if len(args) < 2 {
-		return SandboxTransfer{}, fmt.Errorf("usage: cautem sandbox upload|download <name> <path> [dest]")
+	var positional []string
+	out := SandboxTransfer{}
+	for _, arg := range args {
+		switch arg {
+		case "--no-git-ignore":
+			out.NoGitIgnore = true
+		default:
+			if strings.HasPrefix(arg, "-") {
+				return SandboxTransfer{}, fmt.Errorf("unknown sandbox transfer flag %q", arg)
+			}
+			positional = append(positional, arg)
+		}
 	}
-	out := SandboxTransfer{Name: args[0], Path: args[1]}
-	if len(args) > 2 {
-		out.Dest = args[2]
+	if len(positional) < 2 || len(positional) > 3 {
+		return SandboxTransfer{}, fmt.Errorf("usage: cautem sandbox upload|download <name> <path> [dest] [--no-git-ignore]")
+	}
+	out.Name, out.Path = positional[0], positional[1]
+	if len(positional) > 2 {
+		out.Dest = positional[2]
 	}
 	return out, nil
 }
@@ -334,6 +427,7 @@ func ParseSandboxTransfer(args []string) (SandboxTransfer, error) {
 type LogsOpts struct {
 	Name   string
 	N      int
+	NSet   bool
 	Tail   bool
 	All    bool
 	Since  string
@@ -399,10 +493,11 @@ func ParseLogs(args []string) (LogsOpts, error) {
 				return LogsOpts{}, fmt.Errorf("-n needs a number")
 			}
 			n, err := strconv.Atoi(args[i])
-			if err != nil || n < 0 {
+			if err != nil || n <= 0 || uint64(n) > uint64(^uint32(0)) {
 				return LogsOpts{}, fmt.Errorf("invalid -n")
 			}
 			out.N = n
+			out.NSet = true
 		case "--tail", "--follow", "-f":
 			out.Tail = true
 		case "--all":
@@ -441,16 +536,32 @@ func ParseLogs(args []string) (LogsOpts, error) {
 			out.Name = args[i]
 		}
 	}
+	if out.Source != "all" && out.Source != "sandbox" && out.Source != "proxy" {
+		return LogsOpts{}, fmt.Errorf("invalid --source %q: expected all, sandbox, or proxy", out.Source)
+	}
+	if out.Since != "" {
+		if duration, err := time.ParseDuration(out.Since); err == nil {
+			if duration <= 0 {
+				return LogsOpts{}, fmt.Errorf("invalid --since %q: duration must be positive", out.Since)
+			}
+		} else if _, err := time.Parse(time.RFC3339Nano, out.Since); err != nil {
+			return LogsOpts{}, fmt.Errorf("invalid --since %q: expected a duration or RFC3339 timestamp", out.Since)
+		}
+	}
 	return out, nil
 }
 
 // SandboxExec is OpenShell `sandbox exec [--name NAME] [--workdir DIR] [--env K=V] -- CMD…`
 // or positional `sandbox exec NAME -- CMD…`.
 type SandboxExec struct {
-	Name    string
-	WorkDir string
-	Env     map[string]string
-	Argv    []string
+	Name         string
+	WorkDir      string
+	Env          map[string]string
+	Argv         []string
+	TimeoutSec   uint32
+	TTY          bool
+	TTYSet       bool
+	NoLoginShell bool
 }
 
 // ParseSandboxExec parses args after "exec".
@@ -462,7 +573,7 @@ func ParseSandboxExec(args []string) (SandboxExec, error) {
 			break
 		}
 		switch args[i] {
-		case "--name":
+		case "--name", "-n":
 			i++
 			if i >= len(args) {
 				return SandboxExec{}, fmt.Errorf("--name needs a value")
@@ -484,6 +595,21 @@ func ParseSandboxExec(args []string) (SandboxExec, error) {
 				return SandboxExec{}, fmt.Errorf("--env needs KEY=VALUE")
 			}
 			out.Env[k] = v
+		case "--timeout":
+			i++
+			if i >= len(args) {
+				return SandboxExec{}, fmt.Errorf("--timeout needs seconds (0 means no timeout)")
+			}
+			seconds, err := strconv.ParseUint(args[i], 10, 32)
+			if err != nil {
+				return SandboxExec{}, fmt.Errorf("invalid --timeout %q: expected seconds (0 means no timeout)", args[i])
+			}
+			out.TimeoutSec = uint32(seconds)
+		case "--tty", "--no-tty":
+			out.TTYSet = true
+			out.TTY = args[i] == "--tty"
+		case "--no-login-shell":
+			out.NoLoginShell = true
 		default:
 			if strings.HasPrefix(args[i], "-") {
 				return SandboxExec{}, fmt.Errorf("unknown flag %q", args[i])
@@ -496,11 +622,8 @@ func ParseSandboxExec(args []string) (SandboxExec, error) {
 			out.Name = args[i]
 		}
 	}
-	if out.Name == "" {
-		return SandboxExec{}, fmt.Errorf("usage: cautem sandbox exec [--name] <name> [--workdir DIR] [--env K=V] -- CMD")
-	}
 	if len(out.Argv) == 0 {
-		return SandboxExec{}, fmt.Errorf("usage: cautem sandbox exec <name> -- CMD")
+		return SandboxExec{}, fmt.Errorf("usage: cautem sandbox exec [name] [--workdir DIR] [--env K=V] -- CMD")
 	}
 	return out, nil
 }

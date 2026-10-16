@@ -58,3 +58,16 @@ func TestResolveImageExperimentalGUIGPU(t *testing.T) {
 		t.Fatalf("published GUI+GPU image = %q", remote)
 	}
 }
+
+func TestResolveImageAcceptsOCIReferencesThroughFrom(t *testing.T) {
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	for _, image := range []string{"registry.example.com/team/agent:1.2", "ubuntu:24.04", "ubuntu", "registry.example.com/team/agent@sha256:deadbeef"} {
+		got, err := ResolveImage(image, "")
+		if err != nil || got != image {
+			t.Errorf("ResolveImage(%q)=(%q,%v)", image, got, err)
+		}
+	}
+	if _, err := ResolveImage("registry.example.com/team/agent:v1", "explicit:latest"); err == nil {
+		t.Fatal("--from and --image were accepted together")
+	}
+}

@@ -76,7 +76,7 @@ func ParseSSHProxy(args []string) (SSHProxy, error) {
 	return out, nil
 }
 
-// SandboxConnect is `sandbox connect <name> [--editor vscode|cursor] [-- cmd...]`.
+// SandboxConnect is `sandbox connect [name] [--editor vscode|cursor] [-- cmd...]`.
 type SandboxConnect struct {
 	Name   string
 	Editor string
@@ -117,9 +117,6 @@ func ParseSandboxConnect(args []string) (SandboxConnect, error) {
 		if len(out.Argv) > 0 {
 			return SandboxConnect{}, fmt.Errorf("connect: --editor cannot be combined with a command")
 		}
-	}
-	if out.Name == "" {
-		return SandboxConnect{}, fmt.Errorf("usage: cautem sandbox connect <name> [--editor vscode|cursor] [-- cmd]")
 	}
 	return out, nil
 }

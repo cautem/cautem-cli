@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestRenderHostBlockMatchesOpenShellShape(t *testing.T) {
+func TestRenderHostBlockMatchesCompatShape(t *testing.T) {
 	pc := ProxyCommand("/usr/local/bin/cautem", "--gateway-name", "local", "--name", "demo")
 	got := RenderHostBlock(Alias("demo"), pc)
 	want := `Host cautem-demo

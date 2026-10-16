@@ -14,6 +14,9 @@ func runPolicy(a *service.App, args []string) error {
 	}
 	switch args[0] {
 	case "check": // cautem-only validation helper
+		if len(args) > 2 {
+			return fmt.Errorf("usage: cautem policy check [path]")
+		}
 		path := "policies/default.yaml"
 		if len(args) > 1 {
 			path = args[1]
@@ -48,15 +51,24 @@ func runPolicy(a *service.App, args []string) error {
 		for i := 1; i < len(args); i++ {
 			switch args[i] {
 			case "--global":
+				if global {
+					return fmt.Errorf("--global may be specified only once")
+				}
 				global = true
 			default:
 				if strings.HasPrefix(args[i], "-") {
 					return fmt.Errorf("unknown flag %q", args[i])
 				}
+				if name != "" {
+					return fmt.Errorf("usage: cautem policy list [sandbox|--global]")
+				}
 				name = args[i]
 			}
 		}
 		if global {
+			if name != "" {
+				return fmt.Errorf("--global cannot be combined with a sandbox name")
+			}
 			fmt.Println("policy list --global: (use policy get --global for current YAML)")
 			return a.PolicyGlobalGet()
 		}
@@ -67,9 +79,13 @@ func runPolicy(a *service.App, args []string) error {
 	case "delete", "rm":
 		global := false
 		for _, f := range args[1:] {
-			if f == "--global" {
-				global = true
+			if f != "--global" {
+				return fmt.Errorf("unknown argument %q", f)
 			}
+			if global {
+				return fmt.Errorf("--global may be specified only once")
+			}
+			global = true
 		}
 		if !global {
 			return fmt.Errorf("usage: cautem policy delete --global")

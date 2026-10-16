@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -18,6 +20,7 @@ import (
 	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
 	"github.com/cautem/cautem-cli/internal/storage/templates"
 	"github.com/cautem/cautem-cli/internal/ui"
+	core "github.com/cautem/cautem-core"
 	"github.com/cautem/cautem-core/defaults"
 	"github.com/cautem/cautem-core/env"
 	display "github.com/cautem/cautem-display"
@@ -34,6 +37,8 @@ type SandboxCreateOpts struct {
 	Name           string
 	Image          string
 	Workspace      string
+	BuildContext   string // local Docker-compatible build context
+	Dockerfile     string // path relative to BuildContext; defaults to Dockerfile
 	Policy         string
 	IKnow          bool
 	NoProxy        bool
@@ -47,8 +52,9 @@ type SandboxCreateOpts struct {
 	From           string // BYOC / community image alias
 	NoVolume       bool   // skip persist GuestData volume (default: persist)
 	GPU            bool
+	GPUCount       int
 	CDIDevices     []string
-	Argv           []string // after `--`: create then exec (OpenShell-like)
+	Argv           []string // after `--`: canonical main command
 	// Providers are profile ids or existing instance names (OpenShell --provider).
 	// On create: discover host env, ensure gateway instance, compose policy before start, attach.
 	Providers []string
@@ -61,19 +67,24 @@ type SandboxCreateOpts struct {
 	// NoCredentialWarnings suppresses --env credential-looking key warnings.
 	NoCredentialWarnings bool
 
-	Detach    bool
-	Editor    string // vscode | cursor
-	Forwards  []int
-	Upload    string
-	CPU       float64
-	Memory    string
-	PidsLimit int64 // 0 unset (driver default); -1 unlimited; >0 explicit
-	Template  string
+	Detach           bool
+	Editor           string // vscode | cursor
+	Forwards         []int
+	Upload           string
+	NoGitIgnore      bool
+	CPU              float64
+	Memory           string
+	PidsLimit        int64 // 0 unset (driver default); -1 unlimited; >0 explicit
+	Template         string
+	RestartPolicy    string // never | on-failure | always
+	Remote           bool   // create through the selected Gateway's compute backend
+	GatewayWorkspace string
+	WorkspaceFlagSet bool
 
 	DriverConfigJSON string // --driver-config-json
 	ApprovalMode     string // manual|auto
 	NoKeep           bool   // delete sandbox after main command exits
-	ForceTTY         bool   // --tty force PTY for create-time exec
+	ForceTTY         bool   // --tty force a PTY for the canonical main process
 
 }
 
@@ -83,6 +94,15 @@ type SandboxCreateOpts struct {
 func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 	const op = "cli.sandbox.create"
 	log := a.op(op)
+	if opt.Remote {
+		return a.sandboxCreateRemote(opt)
+	}
+	if err := validateCreateSource(opt); err != nil {
+		return err
+	}
+	if err := validateTemplateCreateConflict(opt); err != nil {
+		return err
+	}
 	if a.Sandboxes == nil || a.Sandboxes.Driver == nil {
 		err := fmt.Errorf("sandbox create: docker not available")
 		log.Error("docker unavailable", slogx.Err(err))
@@ -97,6 +117,53 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 		mergeTemplateIntoCreate(&opt, tpl)
 	}
 	applyCreateDefaults(&opt)
+	if err := validateSandboxCreateResources(opt); err != nil {
+		return err
+	}
+	var memoryBytes int64
+	if opt.Memory != "" {
+		parsedMemory, parseErr := ParseMemoryQuantity(opt.Memory)
+		if parseErr != nil {
+			return fmt.Errorf("sandbox create --memory: %w", parseErr)
+		}
+		memoryBytes = parsedMemory
+	}
+	var err error
+	if strings.TrimSpace(opt.BuildContext) == "" {
+		resolvedImage, resolveErr := gwconfig.ResolveImage(opt.From, opt.Image)
+		if resolveErr != nil {
+			return fmt.Errorf("sandbox create source: %w", resolveErr)
+		}
+		opt.Image = resolvedImage
+	}
+	if opt.NoGitIgnore && opt.Upload == "" {
+		return fmt.Errorf("sandbox create: --no-git-ignore requires --upload")
+	}
+	ctx, cancel := a.withTimeout(TimeoutWork)
+	defer cancel()
+	preparedUpload := opt.Upload
+	uploadFiltered := false
+	uploadDest := ""
+	if opt.Upload != "" {
+		stagedUpload, cleanupUpload, filteredUpload, preflightErr := prepareGitAwareUpload(ctx, opt.Upload, !opt.NoGitIgnore)
+		if preflightErr != nil {
+			return fmt.Errorf("sandbox create --upload preflight: %w", preflightErr)
+		}
+		defer cleanupUpload()
+		preparedUpload, uploadFiltered = stagedUpload, filteredUpload
+		uploadDest, err = sandboxCreateUploadDestination(preparedUpload, opt.Upload)
+		if err != nil {
+			return fmt.Errorf("sandbox create --upload preflight: %w", err)
+		}
+		if err := driver.ValidateUploadDest(uploadDest); err != nil {
+			return fmt.Errorf("sandbox create --upload: %w", err)
+		}
+		if uploadFiltered {
+			fmt.Fprintf(os.Stderr, "sandbox create --upload: applying .gitignore rules to %s\n", opt.Upload)
+		} else if !opt.NoGitIgnore {
+			fmt.Fprintf(os.Stderr, "sandbox create --upload: Git filtering was not applied to %s (outside a Git work tree or symlink source)\n", opt.Upload)
+		}
+	}
 	ws := opt.Workspace
 	if ws == "" && a.GlobalWorkspace != "" && a.GlobalWorkspace != "default" {
 		ws = a.GlobalWorkspace
@@ -108,6 +175,15 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 	if name == "" {
 		name = filepath.Base(ws)
 	}
+	if strings.TrimSpace(opt.BuildContext) != "" {
+		image, buildErr := buildLocalSourceImage(ctx, a.Sandboxes.Driver, opt.BuildContext, opt.Dockerfile, name, os.Stderr)
+		if buildErr != nil {
+			return fmt.Errorf("sandbox create source build: %w", buildErr)
+		}
+		opt.Image = image
+	}
+	createTTY := opt.ForceTTY || (term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd())))
+	canonicalArgv := canonicalMainCommand(opt.Argv)
 	log = log.With(slog.String("sandbox", name), slog.String("workspace", ws))
 	log.Info("creating sandbox")
 	baseDoc, basePath, err := a.loadOrDenyAll(opt.Policy)
@@ -149,7 +225,7 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 	case opt.AutoProviders:
 		mode = autoprovider.ModeOn
 	default:
-		// OpenShell: known trailing agents auto-create providers unless --no-auto-providers.
+		// Known trailing agents auto-create providers unless --no-auto-providers is set.
 		if len(InferProvidersFromArgv(opt.Argv)) > 0 {
 			mode = autoprovider.ModeOn
 		}
@@ -159,15 +235,6 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 	if err != nil {
 		return err
 	}
-	ctx, cancel := a.withTimeout(TimeoutWork)
-	defer cancel()
-
-	img, err := gwconfig.ResolveImage(opt.From, opt.Image)
-	if err != nil {
-		return err
-	}
-	opt.Image = img
-
 	if opt.Labels == nil {
 		opt.Labels = map[string]string{}
 	}
@@ -179,28 +246,21 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 	}
 
 	spec := driver.Spec{
-		Name:             name,
-		Image:            opt.Image,
-		Workspace:        ws,
-		IKnow:            opt.IKnow,
-		Env:              hostEnvForPolicy(doc),
-		PolicyPath:       policyPath,
-		NoHarden:         opt.NoHarden,
-		Labels:           opt.Labels,
-		PersistVolume:    !opt.NoVolume,
-		GPU:              opt.GPU || envTruthy("CAUTEM_GPU"),
-		CDIDevices:       append([]string{}, opt.CDIDevices...),
-		CPU:              opt.CPU,
-		PidsLimit:        opt.PidsLimit,
-		DriverConfigJSON: opt.DriverConfigJSON,
+		Name:                     name,
+		Image:                    opt.Image,
+		Workspace:                ws,
+		Command:                  canonicalArgv,
+		TTY:                      canonicalMainTTY(canonicalArgv, createTTY),
+		IKnow:                    opt.IKnow,
+		Env:                      hostEnvForPolicy(doc),
+		PolicyPath:               policyPath,
+		NoHarden:                 opt.NoHarden,
+		Labels:                   opt.Labels,
+		PersistVolume:            !opt.NoVolume,
+		MainProcessRestartPolicy: opt.RestartPolicy,
+		DriverConfigJSON:         opt.DriverConfigJSON,
 	}
-	if opt.Memory != "" {
-		if mem, err := driver.ParseMemoryBytes(opt.Memory); err != nil {
-			return fmt.Errorf("sandbox create --memory: %w", err)
-		} else {
-			spec.MemoryBytes = mem
-		}
-	}
+	applyCreateResources(&spec, opt, memoryBytes)
 	for _, p := range opt.Forwards {
 		if p > 0 {
 			spec.PublishPorts = append(spec.PublishPorts, driver.PortPublish{Host: p, Guest: p})
@@ -248,6 +308,13 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 		}
 		spec.InitBin = initBin
 	}
+	if spec.MainProcessRestartPolicy != "" && spec.MainProcessRestartPolicy != "never" {
+		supervisorBin, err := ensureSupervisorBin(ctx)
+		if err != nil {
+			return fmt.Errorf("sandbox create restart policy: %w", err)
+		}
+		spec.SupervisorBin = supervisorBin
+	}
 	if !opt.NoProxy {
 		bin, err := ensureProxyBin(ctx)
 		if err != nil {
@@ -266,6 +333,7 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 		log.Error("failed to create sandbox", slogx.Err(err))
 		return err
 	}
+	a.rememberLastSandbox(h.Name, gwURL)
 	log = log.With(slog.String("sandbox_id", shortID(string(h.ID))), slog.String("image", h.Image))
 	if gwURL != "" {
 		cli := a.clientFor(gwURL)
@@ -332,16 +400,19 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 		fmt.Printf("volume: cautem-data-%s → %s (retained across stop/start)\n", h.Name, defaults.GuestData)
 	}
 	if opt.Upload != "" {
-		dest := "/workspace/" + filepath.Base(opt.Upload)
-		if err := driver.ValidateUploadDest(dest); err != nil {
-			return fmt.Errorf("sandbox create --upload: %w", err)
-		}
-		if err := a.Copy(opt.Upload, h.Name+":"+dest); err != nil {
+		if err := a.copy(ctx, preparedUpload, h.Name+":"+uploadDest); err != nil {
 			return err
 		}
 	}
 	if err := a.installAgentConfig(h); err != nil {
-		return fmt.Errorf("sandbox create supervisor guidance: %w", err)
+		if len(canonicalArgv) == 0 {
+			return fmt.Errorf("sandbox create supervisor guidance: %w", err)
+		}
+		info, inspectErr := a.Sandboxes.Driver.Inspect(ctx, string(h.ID))
+		if inspectErr != nil || strings.EqualFold(info.Status, "running") {
+			return fmt.Errorf("sandbox create supervisor guidance: %w", err)
+		}
+		log.Debug("main process exited before optional guidance could be installed", slogx.Err(err))
 	}
 	if ed := strings.ToLower(strings.TrimSpace(opt.Editor)); ed != "" {
 		if err := a.SandboxConnect(ConnectOpts{Name: h.Name, Editor: ed}); err != nil {
@@ -353,13 +424,20 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 			fmt.Printf("sandbox create: --detach skipping exec of %v\n", opt.Argv)
 			return nil
 		}
-		tty := opt.ForceTTY || term.IsTerminal(int(os.Stdin.Fd()))
-		execErr := a.Exec(ExecOpts{
-			Name: h.Name,
-			Argv: opt.Argv,
-			TTY:  tty,
-			Env:  hostEnvForPolicy(doc),
-		})
+		var execErr error
+		if createTTY {
+			execErr = attachCanonicalMainProcessTTY(ctx, a.Sandboxes.Driver, h.ID, os.Stdin, os.Stdout, int(os.Stdout.Fd()))
+		} else if len(canonicalArgv) > 0 {
+			execErr = attachCanonicalMainProcess(ctx, a.Sandboxes.Driver, h.ID, os.Stdout)
+		} else {
+			execErr = a.Exec(ExecOpts{
+				Name:  h.Name,
+				Argv:  opt.Argv,
+				TTY:   createTTY,
+				Env:   hostEnvForPolicy(doc),
+				Stdin: os.Stdin,
+			})
+		}
 		if opt.NoKeep {
 			_ = a.SandboxRemove(h.Name)
 			fmt.Printf("sandbox create: --no-keep removed %s\n", h.Name)
@@ -367,6 +445,30 @@ func (a *App) SandboxCreate(opt SandboxCreateOpts) error {
 		return execErr
 	}
 	return nil
+}
+
+func validateCreateSource(opt SandboxCreateOpts) error {
+	if strings.TrimSpace(opt.BuildContext) != "" {
+		if opt.From != "" || opt.Image != "" {
+			return fmt.Errorf("sandbox create: use either --build or --image/--from")
+		}
+		return nil
+	}
+	if opt.Dockerfile != "" {
+		return fmt.Errorf("sandbox create: --dockerfile requires --build")
+	}
+	return nil
+}
+
+func sandboxCreateUploadDestination(stagedPath, originalPath string) (string, error) {
+	info, err := os.Lstat(stagedPath)
+	if err != nil {
+		return "", fmt.Errorf("inspect staged upload %q: %w", originalPath, err)
+	}
+	if info.IsDir() {
+		return "/workspace", nil
+	}
+	return path.Join("/workspace", filepath.Base(originalPath)), nil
 }
 
 // SandboxList prints sandboxes.
@@ -627,14 +729,28 @@ func (a *App) SandboxStatus(nameOrID string) error {
 func (a *App) SandboxRemove(nameOrID string) error {
 	const op = "cli.sandbox.remove"
 	log := a.op(op, slog.String("sandbox", nameOrID))
+	log.Info("removing sandbox")
+	ctx, cancel := a.withTimeout(TimeoutWait)
+	defer cancel()
+	client, remote, err := a.lifecycleGatewaySandbox(ctx, nameOrID)
+	if err != nil {
+		return fmt.Errorf("sandbox rm: %w", err)
+	}
+	if remote {
+		if err := client.DeleteControlSandbox(ctx, a.workspaceName(), nameOrID); err != nil {
+			log.Error("gateway failed to delete sandbox", slogx.Err(err))
+			return fmt.Errorf("sandbox rm: %w", err)
+		}
+		a.clearLastSandbox(nameOrID)
+		log.Info("sandbox removed by gateway")
+		fmt.Printf("sandbox rm: ok %s\n", nameOrID)
+		return nil
+	}
 	if a.Sandboxes == nil || a.Sandboxes.Driver == nil {
 		err := fmt.Errorf("sandbox rm: docker not available")
 		log.Error("docker unavailable", slogx.Err(err))
 		return err
 	}
-	log.Info("removing sandbox")
-	ctx, cancel := a.withTimeout(TimeoutWait)
-	defer cancel()
 	name := nameOrID
 	if info, err := a.Sandboxes.Driver.Inspect(ctx, nameOrID); err == nil && info.Name != "" {
 		name = info.Name
@@ -643,13 +759,69 @@ func (a *App) SandboxRemove(nameOrID string) error {
 		log.Error("failed to remove sandbox", slogx.Err(err))
 		return err
 	}
-	if cfg, _, err := gwconfig.Load(); err == nil {
-		if u := gwconfig.CurrentURL(cfg); u != "" {
-			_ = a.clientFor(u).DeleteSandbox(ctx, name)
+	if client == nil {
+		if u, err := a.currentGatewayURL(); err == nil {
+			client = a.clientFor(u)
 		}
 	}
+	if client != nil {
+		if err := client.DeleteSandbox(ctx, name); err != nil {
+			log.Warn("sandbox removed locally but registry cleanup failed", slogx.Err(err))
+		}
+	}
+	a.clearLastSandbox(name)
 	log.Info("sandbox removed", slog.String("name", name))
 	fmt.Printf("sandbox rm: ok %s\n", nameOrID)
+	return nil
+}
+
+// SandboxDelete removes one or more sandboxes, or all registered sandboxes in
+// the selected workspace. The registry is the source of truth for --all since
+// local runtime listings do not carry workspace ownership metadata.
+func (a *App) SandboxDelete(names []string, all bool) error {
+	if all {
+		client, err := a.gatewayClient()
+		if err != nil {
+			return fmt.Errorf("sandbox delete --all: %w", err)
+		}
+		ctx, cancel := a.withTimeout(TimeoutAPI)
+		registered, err := client.ListControlSandboxes(ctx, a.GlobalWorkspace, false)
+		cancel()
+		if err != nil {
+			return fmt.Errorf("sandbox delete --all: list workspace sandboxes: %w", err)
+		}
+		workspace := a.GlobalWorkspace
+		if workspace == "" {
+			workspace = "default"
+		}
+		names = names[:0]
+		for _, sandbox := range registered {
+			sandboxWorkspace := sandbox.Workspace
+			if sandboxWorkspace == "" {
+				sandboxWorkspace = "default"
+			}
+			if sandboxWorkspace == workspace {
+				names = append(names, sandbox.Name)
+			}
+		}
+		if len(names) == 0 {
+			fmt.Println("No sandboxes to delete.")
+			return nil
+		}
+	}
+	return removeSandboxes(names, a.SandboxRemove)
+}
+
+func removeSandboxes(names []string, remove func(string) error) error {
+	var failures []error
+	for _, name := range names {
+		if err := remove(name); err != nil {
+			failures = append(failures, fmt.Errorf("%s: %w", name, err))
+		}
+	}
+	if len(failures) > 0 {
+		return fmt.Errorf("sandbox delete: failed to remove %d of %d sandboxes: %w", len(failures), len(names), errors.Join(failures...))
+	}
 	return nil
 }
 
@@ -657,12 +829,14 @@ func (a *App) SandboxRemove(nameOrID string) error {
 
 // LogsOpts configures observation log streaming.
 type LogsOpts struct {
-	Names  []string
-	Follow bool
-	All    bool
-	Since  string
-	Source string
-	Level  string
+	Names    []string
+	Follow   bool
+	All      bool
+	Lines    uint32
+	LinesSet bool
+	Since    string
+	Source   string
+	Level    string
 }
 
 // Logs streams sandbox container logs to stdout.
@@ -696,9 +870,16 @@ func (a *App) LogsToOpts(ctx context.Context, opt LogsOpts, w io.Writer) error {
 	if ctx == nil {
 		ctx = a.CommandContext()
 	}
+	if !opt.LinesSet && opt.Lines == 0 {
+		opt.Lines = 200
+	}
 	names := opt.Names
 	if len(names) == 0 && !opt.All {
-		return fmt.Errorf("logs: no sandbox names")
+		name, err := a.resolveSandboxTarget("")
+		if err != nil {
+			return fmt.Errorf("logs: %w", err)
+		}
+		names = []string{name}
 	}
 	// Prefer the authorized workspace-scoped control API when a gateway is selected.
 	if gw, err := a.currentGatewayURL(); err == nil && gw != "" {
@@ -721,10 +902,10 @@ func (a *App) LogsToOpts(ctx context.Context, opt LogsOpts, w io.Writer) error {
 				}
 			}
 			if opt.Follow {
-				return c.WatchControlSandboxSet(ctx, sandboxes, 200, opt.Since, opt.Source, opt.Level, w)
+				return c.WatchControlSandboxSet(ctx, sandboxes, opt.Lines, opt.Since, gatewayLogSource(opt.Source), opt.Level, w)
 			}
 			for _, sandbox := range sandboxes {
-				lines, err := c.GetControlSandboxLogsFiltered(ctx, sandbox.Workspace, sandbox.Name, 500, opt.Since, opt.Source, opt.Level)
+				lines, err := c.GetControlSandboxLogsFiltered(ctx, sandbox.Workspace, sandbox.Name, opt.Lines, opt.Since, gatewayLogSource(opt.Source), opt.Level)
 				if err != nil {
 					return fmt.Errorf("logs: workspace %q sandbox %q: %w", sandbox.Workspace, sandbox.Name, err)
 				}
@@ -762,6 +943,9 @@ func (a *App) LogsToOpts(ctx context.Context, opt LogsOpts, w io.Writer) error {
 	if a.Sandboxes == nil || a.Sandboxes.Driver == nil {
 		return fmt.Errorf("logs: docker not available")
 	}
+	if opt.Level != "" {
+		return fmt.Errorf("logs: --level is available only through the gateway")
+	}
 	if !opt.Follow {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, TimeoutWait)
@@ -779,7 +963,7 @@ func (a *App) LogsToOpts(ctx context.Context, opt LogsOpts, w io.Writer) error {
 						_ = pw.CloseWithError(err)
 						return
 					}
-					err = a.Sandboxes.Driver.Logs(ctx, info.ID, opt.Follow, pw)
+					err = streamSandboxLogs(ctx, a.Sandboxes.Driver, info.ID, opt, pw)
 					_ = pw.CloseWithError(err)
 				}()
 				sc := bufio.NewScanner(pr)
@@ -803,7 +987,26 @@ func (a *App) LogsToOpts(ctx context.Context, opt LogsOpts, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	return a.Sandboxes.Driver.Logs(ctx, info.ID, opt.Follow, w)
+	return streamSandboxLogs(ctx, a.Sandboxes.Driver, info.ID, opt, w)
+}
+
+func gatewayLogSource(source string) string {
+	if source == "all" {
+		return ""
+	}
+	return source
+}
+
+func streamSandboxLogs(ctx context.Context, compute driver.ComputeDriver, id core.ID, opt LogsOpts, w io.Writer) error {
+	if logsDriver, ok := compute.(driver.LogOptionsDriver); ok {
+		return logsDriver.LogsWithOptions(ctx, id, driver.LogOptions{
+			Follow: opt.Follow, Tail: opt.Lines, TailSet: true, Since: opt.Since, Source: opt.Source,
+		}, w)
+	}
+	if opt.Since != "" || opt.Source != "" && opt.Source != "all" {
+		return fmt.Errorf("logs: selected driver does not support --since or --source")
+	}
+	return compute.Logs(ctx, id, opt.Follow, w)
 }
 
 // GatewayAdd registers a named gateway in config.

@@ -7,8 +7,14 @@ import (
 )
 
 func runDoctor(a *service.App, args []string) error {
-	// OpenShell: doctor check (doctor alone → check)
-	if len(args) == 0 || args[0] == "check" {
+	// The doctor command defaults to the check operation.
+	if len(args) == 0 {
+		return a.Doctor()
+	}
+	if args[0] == "check" {
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem doctor check")
+		}
 		return a.Doctor()
 	}
 	if args[0] == "cleanup" {

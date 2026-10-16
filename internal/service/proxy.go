@@ -27,12 +27,13 @@ import (
 
 // ProxyOpts for foreground host-side CONNECT proxy (debug / host-proxy mode).
 type ProxyOpts struct {
-	Listen     string
-	Policy     string
-	CAOut      string // write MITM CA PEM (for clients / sandbox trust)
-	GatewayURL string // optional: pull secrets + push OCSF
-	Sandbox    string // sandbox name for gateway resolve/push
-	LogDir     string // optional daily OCSF file dir (default /var/log)
+	Listen          string
+	Policy          string
+	CAOut           string // write MITM CA PEM (for clients / sandbox trust)
+	GatewayURL      string // optional: pull secrets + push OCSF
+	GatewayHostMode bool   // GatewayURL already resolves from the proxy host; do not rewrite for a container sidecar
+	Sandbox         string // sandbox name for gateway resolve/push
+	LogDir          string // optional daily OCSF file dir (default /var/log)
 }
 
 // Proxy runs cautem-proxy until interrupted.
@@ -87,7 +88,9 @@ func (a *App) Proxy(opt ProxyOpts) error {
 	var gw *cautem.Client
 	var pusher proxy.LogPusher
 	if gwURL != "" && sandbox != "" {
-		gwURL = GuestGatewayURL(gwURL)
+		if !opt.GatewayHostMode {
+			gwURL = GuestGatewayURL(gwURL)
+		}
 		gw = cautem.NewWithToken(gwURL, sandboxToken)
 		pusher = gatewayAuditPusher{c: gw}
 		if sandboxToken == "" {
@@ -200,7 +203,14 @@ func (a *App) Proxy(opt ProxyOpts) error {
 		go srv.WatchPolicy(ctx, path, time.Second)
 		log.Info("watching policy for hot-reload", "path", path)
 	}
-	return srv.ListenAndServe(ctx, listen)
+	return serveProxy(ctx, srv, listen)
+}
+
+func serveProxy(ctx context.Context, server *proxy.Server, address string) error {
+	if strings.HasPrefix(address, "unix://") {
+		return serveUnixProxy(ctx, server, strings.TrimPrefix(address, "unix://"))
+	}
+	return server.ListenAndServe(ctx, address)
 }
 
 func supervisorRelayEnabled(sshSocket, controlAddress, targetEndpoint, gatewayURL, token string) bool {
@@ -211,7 +221,7 @@ func supervisorRelayEnabled(sshSocket, controlAddress, targetEndpoint, gatewayUR
 func (a *App) refreshProxySecrets(srv *proxy.Server, c *cautem.Client, sandbox string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), TimeoutAPIShort)
 	defer cancel()
-	m, err := c.ResolveSecrets(ctx, sandbox)
+	m, err := c.ResolveProxySecrets(ctx, sandbox)
 	if err != nil {
 		return err
 	}

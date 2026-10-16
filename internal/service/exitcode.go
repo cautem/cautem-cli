@@ -1,6 +1,9 @@
 package service
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // ExitError carries a process exit status for interactive exec/connect/run.
 // main should os.Exit(Code) without printing when Code is in 0–255.
@@ -17,7 +20,8 @@ func (e *ExitError) Error() string {
 
 // ExitCode returns e.Code or -1.
 func ExitCode(err error) (int, bool) {
-	if e, ok := err.(*ExitError); ok && e != nil {
+	var e *ExitError
+	if errors.As(err, &e) && e != nil {
 		return e.Code, true
 	}
 	return -1, false

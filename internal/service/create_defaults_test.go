@@ -54,9 +54,9 @@ func TestApplyCreateDefaultsDoesNotOverrideFlags(t *testing.T) {
 func TestMergeTemplateIntoCreate(t *testing.T) {
 	opt := &SandboxCreateOpts{}
 	mergeTemplateIntoCreate(opt, templates.Template{
-		Memory: "4Gi", CPU: 2, PidsLimit: 2048, From: "cursor",
+		Memory: "4Gi", CPU: 2, GPUCount: 2, PidsLimit: 2048, From: "cursor", DriverConfigJSON: `{"docker":{}}`,
 	})
-	if opt.Memory != "4Gi" || opt.CPU != 2 || opt.PidsLimit != 2048 || opt.From != "cursor" {
+	if opt.Memory != "4Gi" || opt.CPU != 2 || !opt.GPU || opt.GPUCount != 2 || opt.PidsLimit != 2048 || opt.From != "cursor" || opt.DriverConfigJSON == "" {
 		t.Fatalf("%+v", opt)
 	}
 	opt2 := &SandboxCreateOpts{Memory: "1g"}

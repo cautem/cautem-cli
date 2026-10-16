@@ -14,7 +14,7 @@ import (
 	"github.com/cautem/cautem-proxy/proxy"
 )
 
-func TestOpenShellOpenAIProfileComposesAndRewritesMockRequest(t *testing.T) {
+func TestCompatOpenAIProfileComposesAndRewritesMockRequest(t *testing.T) {
 	listener, err := net.Listen("tcp4", "127.0.0.1:0")
 	if err != nil {
 		if errors.Is(err, net.ErrClosed) || strings.Contains(strings.ToLower(err.Error()), "operation not permitted") {

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestPodmanDriverConfigReadsOpenShellTablesAndSharedDefaults(t *testing.T) {
+func TestPodmanDriverConfigReadsCompatTablesAndSharedDefaults(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gateway.toml")
 	data := []byte("[openshell.gateway]\ndefault_image = \"shared:image\"\nsupervisor_image = \"shared:supervisor\"\nhost_gateway_ip = \"10.0.0.2\"\nguest_tls_ca = \"/certs/ca.pem\"\nguest_tls_cert = \"/certs/client.pem\"\nguest_tls_key = \"/certs/client.key\"\n[openshell.drivers.podman]\nnetwork_name = \"sandbox-net\"\nstop_timeout_secs = 15\n")
 	if err := os.WriteFile(path, data, 0o600); err != nil {
@@ -24,7 +24,7 @@ func TestPodmanDriverConfigReadsOpenShellTablesAndSharedDefaults(t *testing.T) {
 	}
 }
 
-func TestPodmanDriverConfigMergesNativeOverridesOverOpenShellAndGatewayDefaults(t *testing.T) {
+func TestPodmanDriverConfigMergesNativeOverridesOverCompatAndGatewayDefaults(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gateway.toml")
 	data := []byte("[openshell.gateway]\ndefault_image = \"shared:image\"\nhost_gateway_ip = \"10.0.0.2\"\n[openshell.drivers.podman]\ndefault_image = \"driver:image\"\nnetwork_name = \"openshell-net\"\nstop_timeout_secs = 15\n")
 	if err := os.WriteFile(path, data, 0o600); err != nil {
@@ -52,7 +52,7 @@ func TestPodmanDriverConfigRejectsNonObjectAndOversizedNativeConfig(t *testing.T
 	}
 }
 
-func TestPodmanDriverConfigBoundsOpenShellConfig(t *testing.T) {
+func TestPodmanDriverConfigBoundsCompatConfig(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gateway.toml")
 	if err := os.WriteFile(path, []byte(strings.Repeat("#", maxDriverConfigBytes+1)), 0o600); err != nil {
 		t.Fatal(err)
@@ -64,7 +64,7 @@ func TestPodmanDriverConfigBoundsOpenShellConfig(t *testing.T) {
 	}
 }
 
-func TestSelectedDriverUsesOpenShellComputeDriverSelection(t *testing.T) {
+func TestSelectedDriverUsesCompatComputeDriverSelection(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gateway.toml")
 	if err := os.WriteFile(path, []byte("[openshell.gateway]\ncompute_drivers = [\"podman\"]\n"), 0o600); err != nil {
 		t.Fatal(err)
@@ -80,7 +80,7 @@ func TestSelectedDriverUsesOpenShellComputeDriverSelection(t *testing.T) {
 	}
 }
 
-func TestSelectedDriverKeepsDockerDefaultForMultiDriverOpenShellConfig(t *testing.T) {
+func TestSelectedDriverKeepsDockerDefaultForMultiDriverCompatConfig(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "gateway.toml")
 	if err := os.WriteFile(path, []byte("[openshell.gateway]\ncompute_drivers = [\"podman\", \"docker\"]\n"), 0o600); err != nil {
 		t.Fatal(err)
@@ -92,7 +92,7 @@ func TestSelectedDriverKeepsDockerDefaultForMultiDriverOpenShellConfig(t *testin
 	}
 }
 
-func TestSelectedDriverRejectsDuplicateOrEmptyOpenShellSelection(t *testing.T) {
+func TestSelectedDriverRejectsDuplicateOrEmptyCompatSelection(t *testing.T) {
 	for _, input := range []string{
 		"[openshell.gateway]\ncompute_drivers = []\n",
 		"[openshell.gateway]\ncompute_drivers = [\"podman\", \"podman\"]\n",
