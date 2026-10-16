@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -61,12 +62,12 @@ func TestPrepareGitAwareUploadFiltersIgnoredFilesAndPreservesLinks(t *testing.T)
 	}
 	if info, err := os.Stat(filepath.Join(root, "nested")); err != nil {
 		t.Fatalf("stat staged directory: %v", err)
-	} else if info.Mode().Perm() != 0o751 {
+	} else if runtime.GOOS != "windows" && info.Mode().Perm() != 0o751 {
 		t.Fatalf("staged directory mode=%v; want 0751", info.Mode().Perm())
 	}
 	if info, err := os.Stat(filepath.Join(root, "nested", "mode.txt")); err != nil {
 		t.Fatalf("stat staged file: %v", err)
-	} else if info.Mode().Perm() != 0o641 {
+	} else if runtime.GOOS != "windows" && info.Mode().Perm() != 0o641 {
 		t.Fatalf("staged file mode=%v; want 0641", info.Mode().Perm())
 	}
 }

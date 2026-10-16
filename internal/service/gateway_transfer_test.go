@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -47,6 +48,15 @@ type transferExecClient struct {
 	options            cautem.SandboxExecOptions
 }
 
+func shellTestPath(t *testing.T, root, target string) string {
+	t.Helper()
+	relative, err := filepath.Rel(root, target)
+	if err != nil {
+		t.Fatalf("make shell test path relative: %v", err)
+	}
+	return filepath.ToSlash(relative)
+}
+
 func (c *transferExecClient) ExecStreamingWithTimeout(_ context.Context, workspace, sandbox string, argv []string, timeout time.Duration, options cautem.SandboxExecOptions) (cautem.SandboxExecStream, error) {
 	c.workspace, c.sandbox, c.argv, c.timeout, c.options = workspace, sandbox, argv, timeout, options
 	if c.stream == nil {
@@ -72,7 +82,7 @@ func TestMakeUploadArchivePreservesDirectoryContentsAndSymlinks(t *testing.T) {
 	if err := os.WriteFile(file, []byte("payload"), 0o640); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Symlink("nested/hello.txt", filepath.Join(source, "link")); err != nil {
+	if err := os.Symlink(filepath.Join("nested", "hello.txt"), filepath.Join(source, "link")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -192,7 +202,7 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 	if _, err := archive.Seek(0, io.SeekStart); err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", destination, kind, base)
+	cmd := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, destination), kind, base)
 	cmd.Dir = root
 	cmd.Stdin = archive
 	if output, err := cmd.CombinedOutput(); err != nil {
@@ -208,7 +218,7 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 	if _, err := archive.Seek(0, io.SeekStart); err != nil {
 		t.Fatal(err)
 	}
-	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", existingDirectory, kind, base)
+	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, existingDirectory), kind, base)
 	cmd.Dir, cmd.Stdin = root, archive
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("directory upload into existing directory: %v: %s", err, output)
@@ -231,7 +241,7 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 		t.Fatal(err)
 	}
 	target := filepath.Join(root, "renamed.txt")
-	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", target, fileKind, fileBase)
+	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, target), fileKind, fileBase)
 	cmd.Dir, cmd.Stdin = root, fileArchive
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("file upload script: %v: %s", err, output)
@@ -244,7 +254,7 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 		t.Fatal(err)
 	}
 	trailingSlashDir := filepath.Join(root, "created-by-trailing-slash") + "/"
-	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", trailingSlashDir, fileKind, fileBase)
+	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, trailingSlashDir)+"/", fileKind, fileBase)
 	cmd.Dir, cmd.Stdin = root, fileArchive
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("trailing slash upload: %v: %s", err, output)
@@ -260,7 +270,7 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 	if err := os.Mkdir(existingDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", existingDir, fileKind, fileBase)
+	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, existingDir), fileKind, fileBase)
 	cmd.Dir, cmd.Stdin = root, fileArchive
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("existing directory upload: %v: %s", err, output)
@@ -276,7 +286,7 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 	if err := os.Symlink("missing-target", danglingDestination); err != nil {
 		t.Fatal(err)
 	}
-	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", danglingDestination, fileKind, fileBase)
+	cmd = exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, danglingDestination), fileKind, fileBase)
 	cmd.Dir, cmd.Stdin = root, fileArchive
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("dangling symlink upload: %v: %s", err, output)
@@ -289,7 +299,8 @@ func TestGatewayUploadScriptExtractsFilesAndChecksWorkspaceBoundary(t *testing.T
 	if _, err := fileArchive.Seek(0, io.SeekStart); err != nil {
 		t.Fatal(err)
 	}
-	escape := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", filepath.Join(root, "..", "outside.txt"), fileKind, fileBase)
+	escapePath := shellTestPath(t, root, filepath.Join(root, "..", "outside.txt"))
+	escape := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", escapePath, fileKind, fileBase)
 	escape.Dir, escape.Stdin = root, fileArchive
 	output, err := escape.CombinedOutput()
 	if err == nil || !strings.Contains(string(output), "escapes sandbox workspace") {
@@ -332,7 +343,7 @@ func TestGatewayUploadDirectoryPartialTransferCanBeRetried(t *testing.T) {
 		t.Fatalf("upload archive unexpectedly small: %d bytes", len(contents))
 	}
 
-	partial := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", destination, kind, base)
+	partial := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, destination), kind, base)
 	partial.Dir = root
 	partial.Stdin = bytes.NewReader(contents[:2048])
 	if output, err := partial.CombinedOutput(); err == nil {
@@ -345,7 +356,7 @@ func TestGatewayUploadDirectoryPartialTransferCanBeRetried(t *testing.T) {
 		t.Fatalf("partial upload was published before retry: %v", err)
 	}
 
-	retry := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", destination, kind, base)
+	retry := exec.Command("sh", "-c", gatewayUploadScript, "cautem-upload", shellTestPath(t, root, destination), kind, base)
 	retry.Dir = root
 	retry.Stdin = bytes.NewReader(contents)
 	if output, err := retry.CombinedOutput(); err != nil {
@@ -383,7 +394,7 @@ func TestDownloadGatewayPathStreamsAndRenamesFile(t *testing.T) {
 		t.Fatalf("download content=%q err=%v", got, err)
 	}
 	info, err := os.Stat(destination)
-	if err != nil || info.Mode().Perm() != 0o640 {
+	if err != nil || (runtime.GOOS != "windows" && info.Mode().Perm() != 0o640) {
 		t.Fatalf("download mode=%v err=%v", info.Mode().Perm(), err)
 	}
 }
@@ -424,11 +435,11 @@ func TestDownloadGatewayPathExtractsDirectoryAndSymlink(t *testing.T) {
 		t.Fatalf("directory file=%q err=%v", got, err)
 	}
 	info, err := os.Stat(filepath.Join(downloadedTree, "nested"))
-	if err != nil || info.Mode().Perm() != 0o710 {
+	if err != nil || (runtime.GOOS != "windows" && info.Mode().Perm() != 0o710) {
 		t.Fatalf("directory mode=%v err=%v", info.Mode().Perm(), err)
 	}
 	info, err = os.Stat(filepath.Join(downloadedTree, "nested", "file.txt"))
-	if err != nil || info.Mode().Perm() != 0o600 {
+	if err != nil || (runtime.GOOS != "windows" && info.Mode().Perm() != 0o600) {
 		t.Fatalf("directory file mode=%v err=%v", info.Mode().Perm(), err)
 	}
 	link, err := os.Readlink(filepath.Join(downloadedTree, "file-link"))
@@ -472,7 +483,7 @@ func TestGatewayDownloadScriptRejectsSourceOutsideWorkspace(t *testing.T) {
 	if err := os.WriteFile(outside, []byte("secret"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("sh", "-c", gatewayDownloadScript, "cautem-download", outside)
+	cmd := exec.Command("sh", "-c", gatewayDownloadScript, "cautem-download", shellTestPath(t, root, outside))
 	cmd.Dir = root
 	output, err := cmd.CombinedOutput()
 	if err == nil || !strings.Contains(string(output), "escapes workspace") {
@@ -482,7 +493,7 @@ func TestGatewayDownloadScriptRejectsSourceOutsideWorkspace(t *testing.T) {
 	if err := os.Symlink(outside, link); err != nil {
 		t.Fatal(err)
 	}
-	cmd = exec.Command("sh", "-c", gatewayDownloadScript, "cautem-download", link)
+	cmd = exec.Command("sh", "-c", gatewayDownloadScript, "cautem-download", shellTestPath(t, root, link))
 	cmd.Dir = root
 	output, err = cmd.CombinedOutput()
 	if err == nil || !strings.Contains(string(output), "escapes workspace") {

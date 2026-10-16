@@ -113,6 +113,7 @@ func makeUploadArchive(source string) (*os.File, string, string, error) {
 			if err != nil {
 				return err
 			}
+			header.Linkname = filepath.ToSlash(header.Linkname)
 		}
 		header.Uid, header.Gid = 0, 0
 		header.Uname, header.Gname = "", ""

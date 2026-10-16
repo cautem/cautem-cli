@@ -9,6 +9,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -467,7 +468,7 @@ func sandboxCreateUploadDestination(stagedPath, originalPath string) (string, er
 	if info.IsDir() {
 		return "/workspace", nil
 	}
-	return filepath.Join("/workspace", filepath.Base(originalPath)), nil
+	return path.Join("/workspace", filepath.Base(originalPath)), nil
 }
 
 // SandboxList prints sandboxes.
