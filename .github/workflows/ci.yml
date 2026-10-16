@@ -58,7 +58,7 @@ jobs:
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 27c1b456c976a0b0ea2535ba66b4faa3d355f933
+          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
@@ -188,7 +188,7 @@ jobs:
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 27c1b456c976a0b0ea2535ba66b4faa3d355f933
+          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
@@ -318,7 +318,7 @@ jobs:
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 27c1b456c976a0b0ea2535ba66b4faa3d355f933
+          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
@@ -463,7 +463,7 @@ jobs:
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 27c1b456c976a0b0ea2535ba66b4faa3d355f933
+          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
@@ -631,7 +631,7 @@ jobs:
         with:
           repository: cautem/cautem-providers
           path: cautem-providers
-          ref: 27c1b456c976a0b0ea2535ba66b4faa3d355f933
+          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
 
       - name: Checkout cautem-proxy candidate
         uses: actions/checkout@v4
@@ -727,8 +727,14 @@ jobs:
                      "libexec/cautem/linux-${arch}/cautem-sshd"; do
               grep -qx "\(\./\)\?${f}" <<<"$list" || { echo "missing ${f} in ${a}"; echo "$list"; exit 1; }
             done
+            for f in providers/claude-code.yaml providers/cursor.yaml providers/github.yaml providers/nvidia.yaml; do
+              grep -qx "\(\./\)\?${f}" <<<"$list" || { echo "missing ${f} in ${a}"; echo "$list"; exit 1; }
+            done
           done
+          gateway_list="$(tar -tzf dist/cautem-gateway_Linux_x86_64.tar.gz)"
+          grep -qx "\(\./\)\?providers/claude-code.yaml" <<<"$gateway_list" || { echo "missing built-in profiles in standalone gateway archive"; echo "$gateway_list"; exit 1; }
           unzip -l dist/cautem_Windows_x86_64.zip | grep -q "libexec/cautem/linux-amd64/cautem-sshd"
+          unzip -l dist/cautem_Windows_x86_64.zip | grep -q "providers/claude-code.yaml"
 
           mkdir -p /tmp/rel && ln -s "$PWD/dist" /tmp/rel/snapshot
           CAUTEM_RELEASE_URL=file:///tmp/rel CAUTEM_VERSION=snapshot \
@@ -736,5 +742,7 @@ jobs:
           test -x /tmp/prefix/bin/cautem
           test -x /tmp/prefix/bin/cautem-gateway
           test -x /tmp/prefix/bin/cautem-console
+          test -f /tmp/prefix/bin/providers/claude-code.yaml
           test -x /tmp/prefix/libexec/cautem/linux-amd64/cautem-sshd
+          /tmp/prefix/bin/cautem provider profile show claude-code | grep -q '^id: claude-code$'
           /tmp/prefix/bin/cautem version

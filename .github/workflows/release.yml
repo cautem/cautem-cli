@@ -43,7 +43,7 @@ jobs:
 
       # The CLI and Gateway builds consume the same published module versions
       # that release:published verifies. These source checkouts are needed only
-      # for GoReleaser's companion Gateway binary and Linux helper builds.
+      # for GoReleaser's companion Gateway binary, profile catalog and helpers.
       - name: Checkout cautem-gateway source
         uses: actions/checkout@v4
         with:
@@ -58,6 +58,13 @@ jobs:
           path: cautem-runtime
           ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
 
+      - name: Checkout cautem-providers profile catalog
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/cautem-providers
+          path: cautem-providers
+          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+
       - uses: actions/setup-go@v5
         with:
           go-version: "1.27.2"
@@ -68,6 +75,7 @@ jobs:
             cautem-runtime/go.sum
             cautem-core/go.sum
             cautem-gateway/go.sum
+            cautem-providers/go.sum
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6

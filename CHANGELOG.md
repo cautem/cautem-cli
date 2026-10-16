@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Package the canonical built-in provider profiles with CLI and standalone Gateway archives, install them beside the CLI, and remove the duplicated CLI-owned catalog.
+
 ## [v0.3.0] - 2026-10-16
 
 ### Added

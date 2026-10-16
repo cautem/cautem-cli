@@ -19,6 +19,7 @@
 #   <prefix>/bin/cautem
 #   <prefix>/bin/cautem-gateway            (linux / macOS; `cautem gateway ensure`)
 #   <prefix>/bin/cautem-console            (linux / macOS; browser management UI)
+#   <prefix>/bin/providers/*.yaml          built-in provider profile catalog
 #   <prefix>/libexec/cautem/linux-<arch>/{cautem,cautem-init,cautem-sshd}
 # The linux helpers are mounted into sandboxes and proxy sidecars, so no Go
 # toolchain, source checkout, or local image build is needed.
@@ -185,6 +186,20 @@ main() {
   if [ -f "${_tmpdir}/${APP_NAME}-console" ]; then
     $_sudo install -m 755 "${_tmpdir}/${APP_NAME}-console" "${_dir}/${APP_NAME}-console"
     info "console → ${_dir}/${APP_NAME}-console"
+  fi
+
+  _providers_src="${_tmpdir}/providers"
+  if [ -d "$_providers_src" ]; then
+    _providers_dst="${_dir}/providers"
+    $_sudo mkdir -p "$_providers_dst"
+    for _profile in "${_providers_src}"/*.yaml; do
+      [ -f "$_profile" ] || continue
+      _profile_name="${_profile##*/}"
+      $_sudo install -m 644 "$_profile" "${_providers_dst}/${_profile_name}"
+    done
+    info "provider profiles → ${_providers_dst}"
+  else
+    info "warning: ${_version} ships no built-in provider profiles"
   fi
 
   _helpers_src="${_tmpdir}/libexec/cautem"
