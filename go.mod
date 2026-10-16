@@ -9,7 +9,7 @@ require (
 	github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20261013191600-5a7728c304b5
 	github.com/cautem/quarshell-core v0.3.1-0.20261016151917-f75458088399
 	github.com/cautem/quarshell-display v0.1.7-0.20261016154255-69036332d77f
-	github.com/cautem/quarshell-driver v0.3.1-0.20261016180809-ff63d197d183
+	github.com/cautem/quarshell-driver v0.3.1-0.20261016183736-516fc183a5fd
 	github.com/cautem/quarshell-proto v0.2.1-0.20261016152658-94146822ca96
 	github.com/cautem/quarshell-providers v0.1.9-0.20261016154254-54b4eb5cb183
 	github.com/cautem/quarshell-proxy v0.3.1-0.20261016181953-cca79d795127
