@@ -588,7 +588,7 @@ func loadBuiltinProfile(idOrPath string) (provider.Profile, error) {
 	}
 	dir := provider.FindBuiltinDir()
 	if dir == "" {
-		return provider.Profile{}, fmt.Errorf("providers dir not found (need cautem-cli/providers)")
+		return provider.Profile{}, fmt.Errorf("built-in provider profile catalog not found")
 	}
 	path := filepath.Join(dir, idOrPath+".yaml")
 	return provider.LoadFile(path)

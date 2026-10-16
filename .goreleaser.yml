@@ -71,6 +71,10 @@ archives:
       - NOTICE
       - README*
       - install.sh
+      # Profiles are owned and versioned by cautem-providers.
+      - src: ../cautem-providers/profiles/*.yaml
+        dst: providers
+        strip_parent: true
       # Literal dst (no {{ .Arch }} — GoReleaser does not expand templates in dst).
       - src: build/helpers/libexec/cautem/linux-amd64/*
         dst: libexec/cautem/linux-amd64
@@ -94,6 +98,9 @@ archives:
     files:
       - LICENSE*
       - NOTICE
+      - src: ../cautem-providers/profiles/*.yaml
+        dst: providers
+        strip_parent: true
 
 checksum:
   name_template: checksums.txt
