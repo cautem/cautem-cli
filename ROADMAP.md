@@ -1,6 +1,6 @@
 # Roadmap — cautem-cli
 
-Status: **v0.3.0** (release prepared) · Depends on core / proxy / SDK `v0.3.0`, driver / runtime `v0.3.0`, providers `v0.1.8`, display `v0.1.6`, proto `v0.2.0`; slogx `v0.1.3`
+Status: **v0.3.1** (release prepared) · Published `github.com/cautem/quarshell-cli` module
 
 ## This module
 

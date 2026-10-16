@@ -5,13 +5,13 @@
 # Install the cautem CLI from a GitHub release (OpenShell-style one-liner).
 #
 # Usage:
-#   curl -LsSf https://raw.githubusercontent.com/cautem/cautem-cli/main/install.sh | sh
+#   curl -LsSf https://raw.githubusercontent.com/cautem/quarshell-cli/main/install.sh | sh
 #
 # Environment:
 #   CAUTEM_VERSION      Release tag (default: latest published release;
 #                           "nightly" is available only when manually published)
 #   CAUTEM_INSTALL_DIR  Install directory (default: ~/.local/bin)
-#   CAUTEM_REPO         Override owner/name (default: cautem/cautem-cli)
+#   CAUTEM_REPO         Override owner/name (default: cautem/quarshell-cli)
 #   CAUTEM_RELEASE_URL  Base URL holding <tag>/<archive> (mirror / air-gapped;
 #                           default: https://github.com/<repo>/releases/download)
 #
@@ -27,7 +27,7 @@
 set -eu
 
 APP_NAME="cautem"
-REPO="${CAUTEM_REPO:-cautem/cautem-cli}"
+REPO="${CAUTEM_REPO:-cautem/quarshell-cli}"
 GITHUB_URL="https://github.com/${REPO}"
 API_URL="https://api.github.com/repos/${REPO}"
 

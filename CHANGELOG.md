@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [v0.3.1] - 2026-10-17
+
+### Changed
+
+- Publish the module under `github.com/cautem/quarshell-cli`; earlier tags keep their original module path.
+- Pin first-party core, display, driver, proto, providers, proxy, runtime, SDK, and slogx modules to their v0.x releases.
+- Build companion Gateway, runtime helpers, and provider profiles from the matching release commits.
+- Align the release dry-run workspace with the same released commits and renamed slogx repository.
+- Update public installation, release, CI, nightly, and example links to the renamed `quarshell-*` repositories.
+
 ### Fixed
 
 - Package the canonical built-in provider profiles with CLI and standalone Gateway archives, install them beside the CLI, and remove the duplicated CLI-owned catalog.

@@ -13,7 +13,7 @@ and the sidecar rewrites it on egress.
 - Go toolchain + this workspace (`go.work`)
 - GitHub PAT with **`repo`** (classic) or fine-grained **Contents: Read and write**
   on the target repos
-- Empty (or existing) repos under the org, e.g. `cautem/cautem-cli`
+- Empty (or existing) repos under the org, e.g. `cautem/quarshell-cli`
 
 ## 1. Build CLI + gateway
 
@@ -164,7 +164,7 @@ Typical loop:
 
 Create-repo allows in our write base policy:
 
-- `POST /orgs/cautem/repos` — `gh repo create cautem/cautem-cli`
+- `POST /orgs/cautem/repos` — `gh repo create cautem/quarshell-cli`
 - `POST /user/repos` — user-owned `gh repo create cautem-cli`
 - then `git-receive-pack` for push
 
@@ -175,7 +175,7 @@ Token still needs GitHub permission (`repo` / admin on org). Policy only admits 
 ```bash
 ./cautem sandbox exec push -- bash
 # inside:
-gh repo create cautem/cautem-cli --private --source=/workspace/cautem-cli --remote=origin --push
+gh repo create cautem/quarshell-cli --private --source=/workspace/cautem-cli --remote=origin --push
 # or:
 gh api -X POST /orgs/cautem/repos -f name=cautem-cli -F private=true
 cd /workspace/cautem-cli && git remote add origin https://github.com/cautem/quarshell-cli.git

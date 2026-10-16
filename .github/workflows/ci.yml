@@ -37,61 +37,61 @@ jobs:
         with:
           repository: cautem/quarshell-core
           path: cautem-core
-          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+          ref: 8e61f22c7922bc10e3b4e3e229d89eb7b3216645
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-display
           path: cautem-display
-          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
+          ref: 84b73068da627be117fd6af1b50879f9c814659e
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-driver
           path: cautem-driver
-          ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
+          ref: 37a3cf50252f437a57618bc5bb3397ce37cb9815
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-providers
           path: cautem-providers
-          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+          ref: 58c132d1d47c8551b03ed37a8d7583db395d5276
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proxy
           path: cautem-proxy
-          ref: db748905153b6d7483034d2f20e96c4509996c84
+          ref: 3af1bc5a22fa167120fd87d8d53e22ff53429c45
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-sdk
           path: cautem-sdk
-          ref: 26cf7232e8f7c1d51da4b8f89a62a7bd229703d6
+          ref: f984e040d0abf3d9ee712d61824567e84e831e28
 
       - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proto
           path: cautem-proto
-          ref: 0297d796a01ee3ef2c22aacb57d72080cde8add7
+          ref: 1665c3e56035854dadc068da8bee3a7e7527a37a
 
       - name: Checkout slogx
         uses: actions/checkout@v4
         with:
-          repository: cautem/slogx
+          repository: cautem/quarshell-slogx
           path: slogx
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -106,27 +106,6 @@ jobs:
                 echo "  ./$d"
               fi
             done
-            echo ')'
-            echo 'replace ('
-            for d in cautem-*; do
-              if [[ -d "$d" ]]; then
-                echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
-                  echo "  github.com/cautem/${d} ${version} => ./$d"
-                done
-              fi
-            done
-            if [[ -d slogx ]]; then
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.2 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.3 => ./slogx'
-            fi
             echo ')'
           } > "${{ github.workspace }}/go.work"
           echo "Wrote go.work:" && cat "${{ github.workspace }}/go.work"
@@ -167,61 +146,61 @@ jobs:
         with:
           repository: cautem/quarshell-core
           path: cautem-core
-          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+          ref: 8e61f22c7922bc10e3b4e3e229d89eb7b3216645
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-display
           path: cautem-display
-          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
+          ref: 84b73068da627be117fd6af1b50879f9c814659e
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-driver
           path: cautem-driver
-          ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
+          ref: 37a3cf50252f437a57618bc5bb3397ce37cb9815
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-providers
           path: cautem-providers
-          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+          ref: 58c132d1d47c8551b03ed37a8d7583db395d5276
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proxy
           path: cautem-proxy
-          ref: db748905153b6d7483034d2f20e96c4509996c84
+          ref: 3af1bc5a22fa167120fd87d8d53e22ff53429c45
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-sdk
           path: cautem-sdk
-          ref: 26cf7232e8f7c1d51da4b8f89a62a7bd229703d6
+          ref: f984e040d0abf3d9ee712d61824567e84e831e28
 
       - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proto
           path: cautem-proto
-          ref: 0297d796a01ee3ef2c22aacb57d72080cde8add7
+          ref: 1665c3e56035854dadc068da8bee3a7e7527a37a
 
       - name: Checkout slogx
         uses: actions/checkout@v4
         with:
-          repository: cautem/slogx
+          repository: cautem/quarshell-slogx
           path: slogx
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -236,27 +215,6 @@ jobs:
                 echo "  ./$d"
               fi
             done
-            echo ')'
-            echo 'replace ('
-            for d in cautem-*; do
-              if [[ -d "$d" ]]; then
-                echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
-                  echo "  github.com/cautem/${d} ${version} => ./$d"
-                done
-              fi
-            done
-            if [[ -d slogx ]]; then
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.2 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.3 => ./slogx'
-            fi
             echo ')'
           } > "${{ github.workspace }}/go.work"
           echo "Wrote go.work:" && cat "${{ github.workspace }}/go.work"
@@ -297,61 +255,61 @@ jobs:
         with:
           repository: cautem/quarshell-core
           path: cautem-core
-          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+          ref: 8e61f22c7922bc10e3b4e3e229d89eb7b3216645
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-display
           path: cautem-display
-          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
+          ref: 84b73068da627be117fd6af1b50879f9c814659e
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-driver
           path: cautem-driver
-          ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
+          ref: 37a3cf50252f437a57618bc5bb3397ce37cb9815
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-providers
           path: cautem-providers
-          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+          ref: 58c132d1d47c8551b03ed37a8d7583db395d5276
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proxy
           path: cautem-proxy
-          ref: db748905153b6d7483034d2f20e96c4509996c84
+          ref: 3af1bc5a22fa167120fd87d8d53e22ff53429c45
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-sdk
           path: cautem-sdk
-          ref: 26cf7232e8f7c1d51da4b8f89a62a7bd229703d6
+          ref: f984e040d0abf3d9ee712d61824567e84e831e28
 
       - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proto
           path: cautem-proto
-          ref: 0297d796a01ee3ef2c22aacb57d72080cde8add7
+          ref: 1665c3e56035854dadc068da8bee3a7e7527a37a
 
       - name: Checkout slogx
         uses: actions/checkout@v4
         with:
-          repository: cautem/slogx
+          repository: cautem/quarshell-slogx
           path: slogx
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -366,27 +324,6 @@ jobs:
                 echo "  ./$d"
               fi
             done
-            echo ')'
-            echo 'replace ('
-            for d in cautem-*; do
-              if [[ -d "$d" ]]; then
-                echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
-                  echo "  github.com/cautem/${d} ${version} => ./$d"
-                done
-              fi
-            done
-            if [[ -d slogx ]]; then
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.2 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.3 => ./slogx'
-            fi
             echo ')'
           } > "${{ github.workspace }}/go.work"
           echo "Wrote go.work:" && cat "${{ github.workspace }}/go.work"
@@ -442,61 +379,61 @@ jobs:
         with:
           repository: cautem/quarshell-core
           path: cautem-core
-          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+          ref: 8e61f22c7922bc10e3b4e3e229d89eb7b3216645
 
       - name: Checkout cautem-display
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-display
           path: cautem-display
-          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
+          ref: 84b73068da627be117fd6af1b50879f9c814659e
 
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-driver
           path: cautem-driver
-          ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
+          ref: 37a3cf50252f437a57618bc5bb3397ce37cb9815
 
       - name: Checkout cautem-providers
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-providers
           path: cautem-providers
-          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+          ref: 58c132d1d47c8551b03ed37a8d7583db395d5276
 
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proxy
           path: cautem-proxy
-          ref: db748905153b6d7483034d2f20e96c4509996c84
+          ref: 3af1bc5a22fa167120fd87d8d53e22ff53429c45
 
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
 
       - name: Checkout cautem-sdk
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-sdk
           path: cautem-sdk
-          ref: 26cf7232e8f7c1d51da4b8f89a62a7bd229703d6
+          ref: f984e040d0abf3d9ee712d61824567e84e831e28
 
       - name: Checkout cautem-proto
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proto
           path: cautem-proto
-          ref: 0297d796a01ee3ef2c22aacb57d72080cde8add7
+          ref: 1665c3e56035854dadc068da8bee3a7e7527a37a
 
       - name: Checkout slogx
         uses: actions/checkout@v4
         with:
-          repository: cautem/slogx
+          repository: cautem/quarshell-slogx
           path: slogx
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -511,27 +448,6 @@ jobs:
                 echo "  ./$d"
               fi
             done
-            echo ')'
-            echo 'replace ('
-            for d in cautem-*; do
-              if [[ -d "$d" ]]; then
-                echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-                for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8; do
-                  echo "  github.com/cautem/${d} ${version} => ./$d"
-                done
-              fi
-            done
-            if [[ -d slogx ]]; then
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.2 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.3 => ./slogx'
-            fi
             echo ')'
           } > "${{ github.workspace }}/go.work"
           echo "Wrote go.work:" && cat "${{ github.workspace }}/go.work"
@@ -589,70 +505,70 @@ jobs:
         with:
           repository: cautem/quarshell-driver
           path: cautem-driver
-          ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
+          ref: 37a3cf50252f437a57618bc5bb3397ce37cb9815
 
       - name: Checkout cautem-gateway candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-gateway
           path: cautem-gateway
-          ref: fe37011c5372ff8f5a2440668666884266c9581f
+          ref: d0ff9c827d9e91ee76a679db3728809d9b78787b
 
       - name: Checkout cautem-runtime candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
 
       - name: Checkout cautem-sdk candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-sdk
           path: cautem-sdk
-          ref: 26cf7232e8f7c1d51da4b8f89a62a7bd229703d6
+          ref: f984e040d0abf3d9ee712d61824567e84e831e28
 
       - name: Checkout cautem-core candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-core
           path: cautem-core
-          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+          ref: 8e61f22c7922bc10e3b4e3e229d89eb7b3216645
 
       - name: Checkout cautem-display candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-display
           path: cautem-display
-          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
+          ref: 84b73068da627be117fd6af1b50879f9c814659e
 
       - name: Checkout cautem-providers candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-providers
           path: cautem-providers
-          ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
+          ref: 58c132d1d47c8551b03ed37a8d7583db395d5276
 
       - name: Checkout cautem-proxy candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proxy
           path: cautem-proxy
-          ref: db748905153b6d7483034d2f20e96c4509996c84
+          ref: 3af1bc5a22fa167120fd87d8d53e22ff53429c45
 
       - name: Checkout cautem-proto candidate
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proto
           path: cautem-proto
-          ref: 0297d796a01ee3ef2c22aacb57d72080cde8add7
+          ref: 1665c3e56035854dadc068da8bee3a7e7527a37a
 
-      - name: Checkout slogx candidate
+      - name: Checkout quarshell-slogx candidate
         uses: actions/checkout@v4
         with:
-          repository: cautem/slogx
+          repository: cautem/quarshell-slogx
           path: slogx
-          ref: 82f30eca1d1ff2a61cf8d5d24103cf613fc731db
+          ref: 259d0347e17d8bcd02769a5e2b5e581094691de0
 
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -662,24 +578,8 @@ jobs:
           {
             echo 'go 1.27.0'
             echo 'use ('
-            for d in cautem-* slogx; do echo "  ./$d"; done
-            echo ')'
-            echo 'replace ('
-            for d in cautem-*; do echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"; done
-            for d in cautem-*; do echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"; done
-            for d in cautem-*; do echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"; done
-            for d in cautem-*; do
-              echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-              echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-              for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8 v0.2.0 v0.2.1 v0.3.0; do
-                echo "  github.com/cautem/${d} ${version} => ./$d"
-              done
-            done
-            echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.1 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.2 => ./slogx'
-            echo '  github.com/cautem/quarshell-slogx v0.1.3 => ./slogx'
+            for d in cautem-*; do echo "  ./$d"; done
+            echo '  ./slogx'
             echo ')'
           } > go.work
 
