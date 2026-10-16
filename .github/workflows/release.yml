@@ -76,5 +76,4 @@ jobs:
           args: release --clean --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GOWORK: ${{ github.workspace }}/go.work
           GOTOOLCHAIN: local
