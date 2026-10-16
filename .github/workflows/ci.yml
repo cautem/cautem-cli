@@ -695,7 +695,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: "~> v2"
+          version: v2.18.3
           workdir: cautem-cli
           args: release --snapshot --clean --skip=publish
         env:
