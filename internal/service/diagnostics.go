@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/cautem/cautem-cli/internal/outfmt"
 	"github.com/cautem/cautem-core/defaults"
 	"github.com/cautem/cautem-driver/driver"
 	"github.com/cautem/cautem-runtime/secrets"
+	"github.com/cautem/quarshell-cli/internal/outfmt"
 )
 
 // Banner is the short CLI intro.
@@ -22,7 +22,7 @@ func (a *App) Banner() string {
 
 // Version reports the CLI stub version.
 // BuildVersion is set at release time:
-// -ldflags "-X github.com/cautem/cautem-cli/internal/service.BuildVersion=…".
+// -ldflags "-X github.com/cautem/quarshell-cli/internal/service.BuildVersion=…".
 
 func (a *App) Version() string { return "cautem " + BuildVersion }
 

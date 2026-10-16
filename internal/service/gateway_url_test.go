@@ -3,7 +3,7 @@ package service_test
 import (
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/service"
 )
 
 func TestGuestGatewayURL(t *testing.T) {

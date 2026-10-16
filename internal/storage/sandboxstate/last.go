@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cautem/cautem-cli/internal/securefile"
+	"github.com/cautem/quarshell-cli/internal/securefile"
 	"gopkg.in/yaml.v3"
 )
 

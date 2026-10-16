@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
 	display "github.com/cautem/cautem-display"
 	"github.com/cautem/cautem-runtime/idp"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 )
 
 // GatewayLoginInteractive stores a bearer token.

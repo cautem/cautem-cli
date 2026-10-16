@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 )
 
 const (

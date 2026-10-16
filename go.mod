@@ -1,4 +1,4 @@
-module github.com/cautem/cautem-cli
+module github.com/cautem/quarshell-cli
 
 go 1.27.0
 

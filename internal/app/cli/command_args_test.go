@@ -3,7 +3,7 @@ package cli
 import (
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/service"
+	"github.com/cautem/quarshell-cli/internal/service"
 )
 
 func TestCommandRoutersRejectIgnoredPositionalArguments(t *testing.T) {

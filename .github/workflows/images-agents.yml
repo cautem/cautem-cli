@@ -41,25 +41,25 @@ jobs:
       - name: Checkout cautem-runtime
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-runtime
+          repository: cautem/quarshell-runtime
           path: cautem-runtime
           ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
       - name: Checkout cautem-core
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-core
+          repository: cautem/quarshell-core
           path: cautem-core
           ref: 59fec9b4e887827515979fe01303f2d7152a96f6
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-driver
+          repository: cautem/quarshell-driver
           path: cautem-driver
           ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-proxy
+          repository: cautem/quarshell-proxy
           path: cautem-proxy
           ref: db748905153b6d7483034d2f20e96c4509996c84
 

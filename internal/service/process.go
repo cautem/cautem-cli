@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/ui"
 	"github.com/cautem/cautem-core/defaults"
 	display "github.com/cautem/cautem-display"
 	"github.com/cautem/cautem-driver/driver"
 	"github.com/cautem/cautem-runtime/sandbox"
 	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-cli/internal/ui"
 	"github.com/cautem/slogx"
 	"golang.org/x/term"
 )

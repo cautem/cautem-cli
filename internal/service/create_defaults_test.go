@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
-	"github.com/cautem/cautem-cli/internal/storage/templates"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
+	"github.com/cautem/quarshell-cli/internal/storage/templates"
 )
 
 func TestApplyCreateDefaultsFromEnv(t *testing.T) {

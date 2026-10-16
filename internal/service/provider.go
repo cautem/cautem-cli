@@ -12,13 +12,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/providerflags"
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
 	"github.com/cautem/cautem-core/engine"
 	"github.com/cautem/cautem-core/env"
 	"github.com/cautem/cautem-core/policy"
 	"github.com/cautem/cautem-providers/provider"
 	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-cli/internal/providerflags"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 	"gopkg.in/yaml.v3"
 )
 

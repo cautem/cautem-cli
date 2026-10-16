@@ -141,7 +141,7 @@ jobs:
             echo "→ ${name}"
             mkdir -p "${stage}/libexec/cautem"
             GOOS="$goos" GOARCH="$goarch" go build -trimpath \
-              -ldflags="-s -w -X github.com/cautem/cautem-cli/internal/service.BuildVersion=${ver}" \
+              -ldflags="-s -w -X github.com/cautem/quarshell-cli/internal/service.BuildVersion=${ver}" \
               -o "${stage}/cautem${ext}" ./cmd/cautem
             cp -R "${helpers}/linux-${goarch}" "${stage}/libexec/cautem/"
             if [[ "$goos" != "windows" && -d ../cautem-gateway ]]; then

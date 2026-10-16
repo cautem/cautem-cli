@@ -47,21 +47,21 @@ jobs:
       - name: Checkout cautem-gateway source
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-gateway
+          repository: cautem/quarshell-gateway
           path: cautem-gateway
           ref: fe37011c5372ff8f5a2440668666884266c9581f
 
       - name: Checkout cautem-runtime helper source
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-runtime
+          repository: cautem/quarshell-runtime
           path: cautem-runtime
           ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
 
       - name: Checkout cautem-providers profile catalog
         uses: actions/checkout@v4
         with:
-          repository: cautem/cautem-providers
+          repository: cautem/quarshell-providers
           path: cautem-providers
           ref: 7fb2983e4edd5367ccf8be17a08607225b02bd47
 

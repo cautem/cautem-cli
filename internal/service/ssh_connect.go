@@ -14,11 +14,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/sshconfig"
-	"github.com/cautem/cautem-cli/internal/storage/gwconfig"
 	"github.com/cautem/cautem-core/defaults"
 	"github.com/cautem/cautem-core/relayproto"
 	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-cli/internal/sshconfig"
+	"github.com/cautem/quarshell-cli/internal/storage/gwconfig"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )

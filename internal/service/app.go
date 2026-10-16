@@ -144,7 +144,7 @@ func envTruthy(key string) bool {
 
 // Version reports the CLI stub version.
 // BuildVersion is set at release time:
-// -ldflags "-X github.com/cautem/cautem-cli/internal/service.BuildVersion=…".
+// -ldflags "-X github.com/cautem/quarshell-cli/internal/service.BuildVersion=…".
 var BuildVersion = "0.1.0-alpha.1"
 
 func findModuleDir(modulePath string) (string, error) {

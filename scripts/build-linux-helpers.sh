@@ -24,7 +24,7 @@ runtime_dir="${CAUTEM_RUNTIME_DIR:-${cli_dir}/../cautem-runtime}"
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
 
-ldflags="-s -w -X github.com/cautem/cautem-cli/internal/service.BuildVersion=${version}"
+ldflags="-s -w -X github.com/cautem/quarshell-cli/internal/service.BuildVersion=${version}"
 for arch in "${arches[@]}"; do
   dst="${out}/linux-${arch}"
   rm -rf "$dst"

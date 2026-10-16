@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cautem/cautem-cli/internal/osargs"
+	"github.com/cautem/quarshell-cli/internal/osargs"
 )
 
 func TestParseGatewayAddCompat(t *testing.T) {

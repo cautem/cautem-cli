@@ -9,10 +9,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cautem/cautem-cli/internal/global"
-	"github.com/cautem/cautem-cli/internal/logger"
-	"github.com/cautem/cautem-cli/internal/service"
-	tuipkg "github.com/cautem/cautem-cli/internal/tui"
+	"github.com/cautem/quarshell-cli/internal/global"
+	"github.com/cautem/quarshell-cli/internal/logger"
+	"github.com/cautem/quarshell-cli/internal/service"
+	tuipkg "github.com/cautem/quarshell-cli/internal/tui"
 	"golang.org/x/term"
 )
 

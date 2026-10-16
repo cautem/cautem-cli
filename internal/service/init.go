@@ -34,7 +34,7 @@ func (a *App) Init(opt InitOpts) error {
 	default:
 		return fmt.Errorf("init: unknown agent %q (supported: cursor)", opt.Agent)
 	}
-	mod, err := findModuleDir("github.com/cautem/cautem-cli")
+	mod, err := findModuleDir("github.com/cautem/quarshell-cli")
 	if err != nil {
 		return err
 	}

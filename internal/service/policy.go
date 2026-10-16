@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cautem/cautem-cli/internal/policywait"
 	"github.com/cautem/cautem-core/engine"
 	"github.com/cautem/cautem-core/policy"
 	"github.com/cautem/cautem-sdk/go/cautem"
+	"github.com/cautem/quarshell-cli/internal/policywait"
 	"github.com/cautem/slogx"
 	"gopkg.in/yaml.v3"
 )

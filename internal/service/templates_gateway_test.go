@@ -8,7 +8,7 @@ import (
 
 	datamodelv1 "github.com/NVIDIA/OpenShell/sdk/go/proto/datamodelv1"
 	openshellv1 "github.com/NVIDIA/OpenShell/sdk/go/proto/openshellv1"
-	"github.com/cautem/cautem-cli/internal/storage/templates"
+	"github.com/cautem/quarshell-cli/internal/storage/templates"
 	"google.golang.org/grpc"
 )
 
