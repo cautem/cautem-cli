@@ -612,22 +612,47 @@ jobs:
           path: cautem-sdk
           ref: 26cf7232e8f7c1d51da4b8f89a62a7bd229703d6
 
-      - name: Checkout sibling modules at published tags
-        run: |
-          set -euo pipefail
-          declare -A MODULES=(
-            [cautem-core]=v0.2.0
-            [cautem-display]=v0.1.6
-            [cautem-providers]=v0.1.7
-            [cautem-proxy]=v0.2.0
-            [cautem-proto]=v0.1.0
-          )
-          for m in cautem-core cautem-display cautem-providers cautem-proxy cautem-proto; do
-            git clone --depth 1 --branch "${MODULES[$m]}" \
-              "https://github.com/cautem/${m}.git" "${m}"
-          done
-          git clone --depth 1 --branch v0.1.3 \
-            https://github.com/cautem/slogx.git slogx
+      - name: Checkout cautem-core candidate
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/cautem-core
+          path: cautem-core
+          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+
+      - name: Checkout cautem-display candidate
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/cautem-display
+          path: cautem-display
+          ref: c58f1a09dd5e0c01ecb96aad5645ecfddbd1d636
+
+      - name: Checkout cautem-providers candidate
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/cautem-providers
+          path: cautem-providers
+          ref: 27c1b456c976a0b0ea2535ba66b4faa3d355f933
+
+      - name: Checkout cautem-proxy candidate
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/cautem-proxy
+          path: cautem-proxy
+          ref: db748905153b6d7483034d2f20e96c4509996c84
+
+      - name: Checkout cautem-proto candidate
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/cautem-proto
+          path: cautem-proto
+          ref: 0297d796a01ee3ef2c22aacb57d72080cde8add7
+
+      - name: Checkout slogx candidate
+        uses: actions/checkout@v4
+        with:
+          repository: cautem/slogx
+          path: slogx
+          ref: 82f30eca1d1ff2a61cf8d5d24103cf613fc731db
 
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -646,7 +671,7 @@ jobs:
             for d in cautem-*; do
               echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
               echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-              for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8 v0.2.0; do
+              for version in v0.1.0 v0.1.6 v0.1.7 v0.1.8 v0.2.0 v0.2.1 v0.3.0; do
                 echo "  github.com/cautem/${d} ${version} => ./$d"
               done
             done
