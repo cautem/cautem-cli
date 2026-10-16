@@ -13,7 +13,7 @@ require (
 	github.com/cautem/quarshell-proto v0.2.1-0.20261016152658-94146822ca96
 	github.com/cautem/quarshell-providers v0.1.9-0.20261016154254-54b4eb5cb183
 	github.com/cautem/quarshell-proxy v0.3.1-0.20261016181953-cca79d795127
-	github.com/cautem/quarshell-runtime v0.3.1-0.20261016181152-338d855de8d8
+	github.com/cautem/quarshell-runtime v0.3.1-0.20261016182820-7a6e8ac72370
 	github.com/cautem/quarshell-sdk v0.3.1-0.20261016154519-f4440643af55
 	github.com/cautem/quarshell-slogx v0.1.4-0.20261016153436-5ec8e199a72f
 	github.com/charmbracelet/bubbletea v1.3.10
@@ -34,7 +34,6 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20261006220739-8c912ac31dd4 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/cautem/slogx v0.1.3 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/charmbracelet/colorprofile v0.2.3-0.20250311203215-f60798e515dc // indirect
