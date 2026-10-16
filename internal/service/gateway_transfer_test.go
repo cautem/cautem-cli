@@ -443,7 +443,7 @@ func TestDownloadGatewayPathExtractsDirectoryAndSymlink(t *testing.T) {
 		t.Fatalf("directory file mode=%v err=%v", info.Mode().Perm(), err)
 	}
 	link, err := os.Readlink(filepath.Join(downloadedTree, "file-link"))
-	if err != nil || link != "nested/file.txt" {
+	if err != nil || filepath.ToSlash(link) != "nested/file.txt" {
 		t.Fatalf("directory symlink=%q err=%v", link, err)
 	}
 }
