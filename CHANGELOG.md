@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-10-16
+
+### Added
+
+- Print stdout and stderr returned by compute drivers, including VM non-interactive exec output and truncation notices.
+- Allow the VM host policy proxy to keep the Gateway URL in host network context instead of rewriting it for a container sidecar.
+- Serve the VM policy proxy on private Unix sockets when linked against published `cautem-proxy` releases.
+- Add local process execution, terminal resize, workspace listing, resource-aware sandbox create, and file upload/download flows.
+
 ## [v0.2.1] - 2026-10-13
 
 ### Changed

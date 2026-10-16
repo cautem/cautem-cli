@@ -21,6 +21,9 @@ const (
 
 	// TimeoutWait — policy wait, browser login, landlock probe.
 	TimeoutWait = 2 * time.Minute
+	// TimeoutExecGrace lets Gateway deliver OpenShell's terminal exit event after
+	// the server-side execution deadline has elapsed.
+	TimeoutExecGrace = 5 * time.Second
 	// TimeoutWaitLong — OIDC / interactive login ceiling.
 	TimeoutWaitLong = 4 * time.Minute
 

@@ -130,12 +130,12 @@ func runProvider(a *service.App, args []string) error {
 		}
 		return a.ProviderUpdate(name, fromExisting, credentials)
 	case "get":
-		if len(args) < 2 {
+		if len(args) != 2 {
 			return fmt.Errorf("usage: cautem provider get <name>")
 		}
 		return a.ProviderGet(args[1])
 	case "delete", "rm":
-		if len(args) < 2 {
+		if len(args) != 2 {
 			return fmt.Errorf("usage: cautem provider delete <name>")
 		}
 		return a.ProviderDelete(args[1])
@@ -145,7 +145,7 @@ func runProvider(a *service.App, args []string) error {
 		}
 		switch args[1] {
 		case "status":
-			if len(args) < 3 {
+			if len(args) != 3 {
 				return fmt.Errorf("usage: cautem provider refresh status <name>")
 			}
 			return a.ProviderRefreshStatus(args[2])
@@ -177,12 +177,18 @@ func runProvider(a *service.App, args []string) error {
 			}
 			return a.ProviderRefreshDelete(args[2], key)
 		default:
+			if len(args) != 2 {
+				return fmt.Errorf("usage: cautem provider refresh <name>")
+			}
 			return a.ProviderRefresh(args[1])
 		}
 	case "list", "ls":
+		if len(args) != 1 {
+			return fmt.Errorf("usage: cautem provider list")
+		}
 		return a.ProviderList()
 	case "effective":
-		if len(args) < 2 {
+		if len(args) != 2 {
 			return fmt.Errorf("usage: cautem provider effective <sandbox>")
 		}
 		return a.ProviderEffective(args[1])

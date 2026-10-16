@@ -72,6 +72,7 @@ func TestParseSandboxConnect(t *testing.T) {
 		{[]string{"demo", "--editor", "cursor"}, osargs.SandboxConnect{Name: "demo", Editor: "cursor"}},
 		{[]string{"--editor=VSCode", "demo"}, osargs.SandboxConnect{Name: "demo", Editor: "vscode"}},
 		{[]string{"demo", "--", "ls", "-la", "--color"}, osargs.SandboxConnect{Name: "demo", Argv: []string{"ls", "-la", "--color"}}},
+		{nil, osargs.SandboxConnect{}},
 	}
 	for _, c := range cases {
 		got, err := osargs.ParseSandboxConnect(c.args)
@@ -83,7 +84,6 @@ func TestParseSandboxConnect(t *testing.T) {
 		}
 	}
 	for _, args := range [][]string{
-		nil,
 		{"demo", "--ssh"},
 		{"demo", "--editor", "emacs"},
 		{"demo", "--editor", "cursor", "--", "ls"},

@@ -108,7 +108,8 @@ func CurrentURL(f File) string {
 	return g.URL
 }
 
-// ResolveImage expands --from aliases (config images map + builtins).
+// ResolveImage expands configured/builtin --from aliases and otherwise treats
+// the value as an OCI image reference.
 func ResolveImage(from, explicit string) (string, error) {
 	if explicit != "" && from != "" {
 		return "", fmt.Errorf("use either --image or --from, not both")
@@ -158,5 +159,5 @@ func ResolveImage(from, explicit string) (string, error) {
 	if img, ok := builtins[from]; ok {
 		return img, nil
 	}
-	return "", fmt.Errorf("unknown --from %q (add images.%s to ~/.config/cautem/config.yaml)", from, from)
+	return from, nil
 }

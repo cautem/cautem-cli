@@ -447,7 +447,7 @@ func (a *App) loadOrDenyAll(path string) (policy.Document, string, error) {
 		return policy.Document{}, "", err
 	}
 	abs := filepath.Join(dir, "deny-all.yaml")
-	const body = "version: 1\nnetwork:\n  default: deny\n"
+	const body = "version: 1\nnetwork_policies: {}\n"
 	if err := os.WriteFile(abs, []byte(body), 0o644); err != nil {
 		return policy.Document{}, "", err
 	}

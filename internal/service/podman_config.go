@@ -12,14 +12,14 @@ import (
 
 const maxDriverConfigBytes = 1 << 20
 
-// podmanDriverConfigFromEnvironment adapts OpenShell TOML and cautem-native
-// JSON into one driver map. Native values override OpenShell values per key;
-// OpenShell gateway defaults are inherited before that overlay is applied.
+// podmanDriverConfigFromEnvironment adapts legacy Gateway TOML and native
+// JSON into one driver map. Native values override legacy values per key;
+// legacy Gateway defaults are inherited before that overlay is applied.
 func podmanDriverConfigFromEnvironment() (map[string]any, error) {
 	out := map[string]any{}
 	path := os.Getenv("OPENSHELL_CONFIG")
 	if path != "" {
-		document, err := readOpenShellConfig(path)
+		document, err := readGatewayConfig(path)
 		if err != nil {
 			return nil, err
 		}
@@ -55,34 +55,34 @@ func podmanDriverConfigFromEnvironment() (map[string]any, error) {
 	return out, nil
 }
 
-func readOpenShellConfig(path string) (map[string]any, error) {
+func readGatewayConfig(path string) (map[string]any, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("read OpenShell config: %w", err)
+		return nil, fmt.Errorf("read Gateway config: %w", err)
 	}
 	defer f.Close()
 	body, err := io.ReadAll(io.LimitReader(f, maxDriverConfigBytes+1))
 	if err != nil {
-		return nil, fmt.Errorf("read OpenShell config: %w", err)
+		return nil, fmt.Errorf("read Gateway config: %w", err)
 	}
 	if len(body) > maxDriverConfigBytes {
-		return nil, fmt.Errorf("OpenShell config exceeds %d bytes", maxDriverConfigBytes)
+		return nil, fmt.Errorf("gateway config exceeds %d bytes", maxDriverConfigBytes)
 	}
 	var document map[string]any
 	if err := toml.Unmarshal(body, &document); err != nil {
-		return nil, fmt.Errorf("parse OpenShell config: %w", err)
+		return nil, fmt.Errorf("parse Gateway config: %w", err)
 	}
 	return document, nil
 }
 
 // configuredComputeDriversFromEnvironment reads the enabled compute registry
-// from the same OpenShell TOML used for driver-specific settings.
+// from the same legacy Gateway TOML used for driver-specific settings.
 func configuredComputeDriversFromEnvironment() ([]string, error) {
 	path := os.Getenv("OPENSHELL_CONFIG")
 	if path == "" {
 		return nil, nil
 	}
-	document, err := readOpenShellConfig(path)
+	document, err := readGatewayConfig(path)
 	if err != nil {
 		return nil, err
 	}
@@ -94,14 +94,14 @@ func configuredComputeDriversFromEnvironment() ([]string, error) {
 	}
 	values, ok := raw.([]any)
 	if !ok || len(values) == 0 {
-		return nil, fmt.Errorf("openshell.gateway.compute_drivers must be a non-empty string array")
+		return nil, fmt.Errorf("gateway.compute_drivers must be a non-empty string array")
 	}
 	drivers := make([]string, 0, len(values))
 	seen := map[string]bool{}
 	for _, value := range values {
 		name, ok := value.(string)
 		if !ok || strings.TrimSpace(name) == "" {
-			return nil, fmt.Errorf("openshell.gateway.compute_drivers entries must be non-empty strings")
+			return nil, fmt.Errorf("gateway.compute_drivers entries must be non-empty strings")
 		}
 		name = normalizeSelectedDriver(name)
 		if name != "docker" && name != "podman" && name != "vm" && name != "kubernetes" {

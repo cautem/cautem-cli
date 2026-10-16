@@ -521,7 +521,7 @@ func (a *App) prepareProviders(base policy.Document, basePath string, names []st
 }
 
 func (a *App) resolveProviderForCreate(name, gwURL string) (provider.Profile, []string, string, error) {
-	// Prefer existing gateway instance with this name (OpenShell: --provider <instance>).
+	// Prefer an existing gateway instance selected with --provider <instance>.
 	if gwURL != "" {
 		c := a.clientFor(gwURL)
 		list, err := c.ListProviders(a.apiCtx())

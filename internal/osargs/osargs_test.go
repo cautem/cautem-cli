@@ -1,12 +1,13 @@
 package osargs_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/cautem/cautem-cli/internal/osargs"
 )
 
-func TestParseGatewayAddOpenShell(t *testing.T) {
+func TestParseGatewayAddCompat(t *testing.T) {
 	g, err := osargs.ParseGatewayAdd([]string{"http://127.0.0.1:7443", "--local", "--name", "local"})
 	if err != nil {
 		t.Fatal(err)
@@ -87,6 +88,13 @@ func TestParseSandboxTransfer(t *testing.T) {
 	if u.Name != "demo" || u.Path != "./src" || u.Dest != "/workspace" {
 		t.Fatalf("%+v", u)
 	}
+	u, err = osargs.ParseSandboxTransfer([]string{"demo", "./src", "--no-git-ignore"})
+	if err != nil || !u.NoGitIgnore || u.Name != "demo" || u.Path != "./src" {
+		t.Fatalf("upload with no-git-ignore=%+v err=%v", u, err)
+	}
+	if _, err := osargs.ParseSandboxTransfer([]string{"demo", "./src", "--unexpected"}); err == nil {
+		t.Fatal("unknown sandbox transfer flag accepted")
+	}
 }
 
 func TestParseLogs(t *testing.T) {
@@ -94,8 +102,32 @@ func TestParseLogs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if l.Name != "demo" || !l.Tail || l.N != 50 || l.Source != "sandbox" {
+	if l.Name != "demo" || !l.Tail || l.N != 50 || !l.NSet || l.Source != "sandbox" {
 		t.Fatalf("%+v", l)
+	}
+	filtered, err := osargs.ParseLogs([]string{"--since", "15m", "--source", "proxy"})
+	if err != nil || filtered.Since != "15m" || filtered.Source != "proxy" {
+		t.Fatalf("filtered logs = %+v, %v", filtered, err)
+	}
+	for _, args := range [][]string{{"--source", "unknown"}, {"--since", "tomorrow"}, {"--since", "-1m"}, {"-n", "0"}, {"-n", "4294967296"}} {
+		if _, err := osargs.ParseLogs(args); err == nil {
+			t.Errorf("ParseLogs(%q) unexpectedly succeeded", args)
+		}
+	}
+}
+
+func TestParseSandboxAttach(t *testing.T) {
+	parsed, err := osargs.ParseSandboxAttach([]string{"demo", "--tty"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.Name != "demo" || !parsed.TTY {
+		t.Fatalf("ParseSandboxAttach()=%#v", parsed)
+	}
+	for _, args := range [][]string{{}, {"demo", "other"}, {"demo", "--unknown"}} {
+		if _, err := osargs.ParseSandboxAttach(args); err == nil {
+			t.Errorf("ParseSandboxAttach(%q) unexpectedly succeeded", args)
+		}
 	}
 }
 
@@ -113,5 +145,55 @@ func TestParseSandboxExec(t *testing.T) {
 	}
 	if e2.Name != "demo" || len(e2.Argv) != 2 {
 		t.Fatalf("%+v", e2)
+	}
+}
+
+func TestParseSandboxExecAllowsImplicitLastUsedTarget(t *testing.T) {
+	parsed, err := osargs.ParseSandboxExec([]string{"--", "printf", "hello"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.Name != "" || strings.Join(parsed.Argv, " ") != "printf hello" {
+		t.Fatalf("implicit target parse = %+v", parsed)
+	}
+}
+
+func TestParseSandboxExecCompatFlags(t *testing.T) {
+	e, err := osargs.ParseSandboxExec([]string{"-n", "demo", "--workdir", "/app", "--timeout", "12", "--no-tty", "--no-login-shell", "--env", "MODE=test", "--", "sh", "-c", "exit 7"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if e.Name != "demo" || e.WorkDir != "/app" || e.TimeoutSec != 12 || e.TTY || !e.TTYSet || !e.NoLoginShell || e.Env["MODE"] != "test" {
+		t.Fatalf("parsed exec options=%+v", e)
+	}
+	if got := strings.Join(e.Argv, " "); got != "sh -c exit 7" {
+		t.Fatalf("argv=%q", got)
+	}
+
+	forcedTTY, err := osargs.ParseSandboxExec([]string{"demo", "--tty", "--", "cat"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !forcedTTY.TTY || !forcedTTY.TTYSet {
+		t.Fatalf("--tty was not preserved: %+v", forcedTTY)
+	}
+	lastFlagWins, err := osargs.ParseSandboxExec([]string{"demo", "--tty", "--no-tty", "--", "true"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if lastFlagWins.TTY || !lastFlagWins.TTYSet {
+		t.Fatalf("TTY override order was not preserved: %+v", lastFlagWins)
+	}
+}
+
+func TestParseSandboxExecRejectsInvalidCompatFlags(t *testing.T) {
+	for _, args := range [][]string{
+		{"demo", "--timeout", "-1", "--", "true"},
+		{"demo", "--timeout", "4294967296", "--", "true"},
+		{"demo", "--timeout", "one", "--", "true"},
+	} {
+		if _, err := osargs.ParseSandboxExec(args); err == nil {
+			t.Errorf("ParseSandboxExec(%q) unexpectedly succeeded", args)
+		}
 	}
 }

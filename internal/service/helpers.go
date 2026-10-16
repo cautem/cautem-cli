@@ -15,9 +15,10 @@ import (
 // archives ship them under <prefix>/libexec/cautem/linux-<arch>/ next to
 // <prefix>/bin/cautem; source checkouts cross-compile them on demand.
 const (
-	helperCLI  = "cautem"
-	helperInit = "cautem-init"
-	helperSSHD = "cautem-sshd"
+	helperCLI        = "cautem"
+	helperInit       = "cautem-init"
+	helperSSHD       = "cautem-sshd"
+	helperSupervisor = "cautem-supervisor"
 
 	// EnvHelpersDir pins the directory holding linux helpers (no fallbacks).
 	EnvHelpersDir = "CAUTEM_HELPERS_DIR"
@@ -91,11 +92,15 @@ func ensureSSHDBin(ctx context.Context) (string, error) {
 	return resolveLinuxHelper(ctx, helperSSHD, "github.com/cautem/cautem-runtime", driver.EnsureLinuxSSHD)
 }
 
+func ensureSupervisorBin(ctx context.Context) (string, error) {
+	return resolveLinuxHelper(ctx, helperSupervisor, "github.com/cautem/cautem-runtime", driver.EnsureLinuxSupervisor)
+}
+
 // helperStatus reports where linux helpers come from, without building.
 func helperStatus() string {
 	var missing []string
 	dir := ""
-	for _, n := range []string{helperCLI, helperInit, helperSSHD} {
+	for _, n := range []string{helperCLI, helperInit, helperSSHD, helperSupervisor} {
 		if p, ok := bundledHelper(n); ok {
 			dir = filepath.Dir(p)
 		} else {

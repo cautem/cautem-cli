@@ -27,7 +27,7 @@ import (
 // sandbox's supervisor relay (412 "sandbox is not ready").
 const sessionReadyTimeout = 60 * time.Second
 
-// ConnectOpts is `sandbox connect <name> [--editor vscode|cursor] [-- cmd]`.
+// ConnectOpts is `sandbox connect [name] [--editor vscode|cursor] [-- cmd]`.
 type ConnectOpts struct {
 	Name   string
 	Editor string   // "", "vscode", "cursor"
@@ -140,10 +140,18 @@ func (a *App) SandboxSSHConfig(name string, install bool) error {
 func (a *App) SandboxConnect(opt ConnectOpts) error {
 	name := strings.TrimSpace(opt.Name)
 	if name == "" {
-		return fmt.Errorf("usage: cautem sandbox connect <name> [--editor vscode|cursor] [-- cmd]")
+		var err error
+		name, err = a.resolveSandboxTarget("")
+		if err != nil {
+			return fmt.Errorf("connect: %w", err)
+		}
 	}
 	if ed := strings.ToLower(strings.TrimSpace(opt.Editor)); ed != "" {
-		return a.openEditor(name, ed)
+		if err := a.openEditor(name, ed); err != nil {
+			return err
+		}
+		a.rememberLastSandbox(name, "")
+		return nil
 	}
 	sshBin, err := exec.LookPath("ssh")
 	if err != nil {
@@ -158,10 +166,12 @@ func (a *App) SandboxConnect(opt ConnectOpts) error {
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 	if err := cmd.Run(); err != nil {
 		if ee, ok := errors.AsType[*exec.ExitError](err); ok {
+			a.rememberLastSandbox(name, "")
 			return &ExitError{Code: ee.ExitCode()}
 		}
 		return err
 	}
+	a.rememberLastSandbox(name, "")
 	return nil
 }
 
