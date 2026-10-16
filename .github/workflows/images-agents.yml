@@ -43,30 +43,30 @@ jobs:
         with:
           repository: cautem/quarshell-runtime
           path: cautem-runtime
-          ref: 58cca1e35b2b8d7eddc0cbddfefaf6e7172fc215
+          ref: 846552ef43e80f0166fb3b284b4d56c99d112c08
       - name: Checkout cautem-core
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-core
           path: cautem-core
-          ref: 59fec9b4e887827515979fe01303f2d7152a96f6
+          ref: 8e61f22c7922bc10e3b4e3e229d89eb7b3216645
       - name: Checkout cautem-driver
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-driver
           path: cautem-driver
-          ref: 2bfed8c08c9c2a3d900980e8b80dcf0898bc17a4
+          ref: 37a3cf50252f437a57618bc5bb3397ce37cb9815
       - name: Checkout cautem-proxy
         uses: actions/checkout@v4
         with:
           repository: cautem/quarshell-proxy
           path: cautem-proxy
-          ref: db748905153b6d7483034d2f20e96c4509996c84
+          ref: 3af1bc5a22fa167120fd87d8d53e22ff53429c45
 
-      - name: Checkout slogx
+      - name: Checkout quarshell-slogx
         uses: actions/checkout@v4
         with:
-          repository: cautem/slogx
+          repository: cautem/quarshell-slogx
           path: slogx
       - name: Write go.work
         working-directory: ${{ github.workspace }}
@@ -82,26 +82,7 @@ jobs:
             ./cautem-proxy
             ./slogx
           )
-          replace (
-            github.com/cautem/quarshell-runtime v0.1.0-alpha.1 => ./cautem-runtime
-            github.com/cautem/quarshell-runtime v0.1.0-alpha.2 => ./cautem-runtime
-            github.com/cautem/quarshell-runtime v0.1.6 => ./cautem-runtime
-            github.com/cautem/quarshell-runtime v0.1.8 => ./cautem-runtime
-            github.com/cautem/quarshell-core v0.1.0-alpha.1 => ./cautem-core
-            github.com/cautem/quarshell-core v0.1.0-alpha.2 => ./cautem-core
-            github.com/cautem/quarshell-core v0.1.6 => ./cautem-core
-            github.com/cautem/quarshell-driver v0.1.0-alpha.1 => ./cautem-driver
-            github.com/cautem/quarshell-driver v0.1.0-alpha.2 => ./cautem-driver
-            github.com/cautem/quarshell-driver v0.1.6 => ./cautem-driver
-            github.com/cautem/quarshell-driver v0.1.7 => ./cautem-driver
-            github.com/cautem/quarshell-proxy v0.1.0-alpha.1 => ./cautem-proxy
-            github.com/cautem/quarshell-proxy v0.1.0-alpha.2 => ./cautem-proxy
-            github.com/cautem/quarshell-proxy v0.1.6 => ./cautem-proxy
-            github.com/cautem/quarshell-proxy v0.1.8 => ./cautem-proxy
-            github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx
-            github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx
-            github.com/cautem/quarshell-slogx v0.1.3 => ./slogx
-          )
+
           EOF
           # strip leading spaces from heredoc body
           sed -i 's/^          //' "${{ github.workspace }}/go.work"

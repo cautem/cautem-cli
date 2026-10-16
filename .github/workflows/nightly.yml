@@ -34,16 +34,16 @@ jobs:
         run: |
           set -euo pipefail
           declare -A REMOTES=(
-            [cautem-core]=cautem/cautem-core
-            [cautem-display]=cautem/cautem-display
-            [cautem-driver]=cautem/cautem-driver
-            [cautem-providers]=cautem/cautem-providers
-            [cautem-proxy]=cautem/cautem-proxy
-            [cautem-runtime]=cautem/cautem-runtime
-            [cautem-sdk]=cautem/cautem-sdk
-            [cautem-gateway]=cautem/cautem-gateway
-            [cautem-proto]=cautem/cautem-proto
-            [slogx]=cautem/slogx
+            [cautem-core]=cautem/quarshell-core
+            [cautem-display]=cautem/quarshell-display
+            [cautem-driver]=cautem/quarshell-driver
+            [cautem-providers]=cautem/quarshell-providers
+            [cautem-proxy]=cautem/quarshell-proxy
+            [cautem-runtime]=cautem/quarshell-runtime
+            [cautem-sdk]=cautem/quarshell-sdk
+            [cautem-gateway]=cautem/quarshell-gateway
+            [cautem-proto]=cautem/quarshell-proto
+            [slogx]=cautem/quarshell-slogx
           )
           for local in \
             cautem-core cautem-display cautem-driver \
@@ -70,27 +70,6 @@ jobs:
                 echo "  ./$d"
               fi
             done
-            echo ')'
-            echo 'replace ('
-            for d in cautem-*; do
-              if [[ -d "$d" ]]; then
-                echo "  github.com/cautem/${d} v0.1.0-alpha.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-alpha.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.1 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0-beta.2 => ./$d"
-                echo "  github.com/cautem/${d} v0.1.0 => ./$d"
-                for version in v0.1.6 v0.1.7 v0.1.8; do
-                  echo "  github.com/cautem/${d} ${version} => ./$d"
-                done
-              fi
-            done
-            if [[ -d slogx ]]; then
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-alpha.2 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.1 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.0-beta.2 => ./slogx'
-              echo '  github.com/cautem/quarshell-slogx v0.1.3 => ./slogx'
-            fi
             echo ')'
           } > "${{ github.workspace }}/go.work"
           echo "Wrote go.work:" && cat "${{ github.workspace }}/go.work"
@@ -194,7 +173,7 @@ jobs:
 
             ### Install
             ```bash
-            curl -LsSf https://raw.githubusercontent.com/cautem/cautem-cli/main/install.sh | CAUTEM_VERSION=nightly sh
+            curl -LsSf https://raw.githubusercontent.com/cautem/quarshell-cli/main/install.sh | CAUTEM_VERSION=nightly sh
             ```
           files: dist/*
         env:
